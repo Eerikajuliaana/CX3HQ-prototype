@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CX3 — Unlock how your team actually works.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #080C12;
+    --navy: #0D1521;
+    --navy-mid: #111C2E;
+    --navy-light: #172238;
+    --teal: #00D4AA;
+    --teal-dim: #00A882;
+    --teal-glow: rgba(0, 212, 170, 0.12);
+    --teal-border: rgba(0, 212, 170, 0.25);
+    --white: #F0F4F8;
+    --white-dim: rgba(240, 244, 248, 0.55);
+    --white-faint: rgba(240, 244, 248, 0.12);
+    --red-soft: rgba(220, 80, 80, 0.15);
+    --red: #E05555;
+    --border: rgba(255,255,255,0.07);
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.2rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(8, 12, 18, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+
+  .nav-logo span { color: var(--teal); }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--white-dim);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    background: var(--teal);
+    color: var(--black) !important;
+    padding: 0.55rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    transition: opacity 0.2s !important;
+  }
+
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8rem 2rem 6rem;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(0, 212, 170, 0.08) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--teal-glow);
+    border: 1px solid var(--teal-border);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem;
+    color: var(--teal);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--teal);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--teal);
+  }
+
+  .hero-sub {
+    font-size: 1.2rem;
+    color: var(--white-dim);
+    max-width: 580px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+    line-height: 1.7;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: var(--teal);
+    color: var(--black);
+    padding: 0.85rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    font-family: var(--font-body);
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-primary:hover {
+    background: #00EEBB;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.3);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--white-dim);
+    padding: 0.85rem 2rem;
+    border-radius: 8px;
+    font-weight: 400;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.2);
+    color: var(--white);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    margin-top: 4rem;
+    padding-top: 4rem;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.6s ease 0.4s both;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--teal);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--white-dim);
+    font-weight: 300;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 1.2rem;
+  }
+
+  .section-body {
+    font-size: 1.05rem;
+    color: var(--white-dim);
+    max-width: 560px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── PROBLEM ── */
+  #problem {
+    padding: 7rem 0;
+    background: var(--navy);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .problem-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .problem-header .section-body {
+    margin: 0 auto;
+  }
+
+  .pain-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .pain-card {
+    background: var(--navy);
+    padding: 2rem;
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .pain-card:hover {
+    background: var(--navy-light);
+  }
+
+  .pain-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--red);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .pain-card:hover::before { opacity: 1; }
+
+  .pain-quote {
+    font-size: 0.95rem;
+    color: var(--white-dim);
+    font-style: italic;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+    font-weight: 300;
+  }
+
+  .pain-theme {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--red);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .pain-note {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--white-faint);
+    margin-top: 2rem;
+    font-style: italic;
+  }
+
+  /* ── SOLUTION ── */
+  #solution {
+    padding: 7rem 0;
+  }
+
+  .solution-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .solution-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border);
+    cursor: default;
+    transition: all 0.2s;
+  }
+
+  .step:first-child { border-top: 1px solid var(--border); }
+
+  .step:hover .step-num { color: var(--teal); }
+  .step:hover .step-title { color: var(--teal); }
+
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--white-faint);
+    padding-top: 0.2rem;
+    min-width: 28px;
+    transition: color 0.2s;
+    letter-spacing: 0.06em;
+  }
+
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+    transition: color 0.2s;
+  }
+
+  .step-body {
+    font-size: 0.9rem;
+    color: var(--white-dim);
+    font-weight: 300;
+    line-height: 1.65;
+  }
+
+  /* MOCKUP CARD */
+  .solution-visual {
+    position: relative;
+  }
+
+  .mock-card {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mock-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--teal), transparent);
+  }
+
+  .mock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+
+  .mock-name {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .mock-tag {
+    font-size: 0.7rem;
+    background: var(--teal-glow);
+    color: var(--teal);
+    border: 1px solid var(--teal-border);
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .mock-headline {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+
+  .mock-dims {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .mock-dim {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dim-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.18rem 0.55rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    min-width: 110px;
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+
+  .dim-badge.b1 { background: rgba(14, 99, 175, 0.2); color: #5AABFF; }
+  .dim-badge.b2 { background: rgba(16, 120, 60, 0.2); color: #4ECB81; }
+  .dim-badge.b3 { background: rgba(160, 100, 10, 0.2); color: #F5A623; }
+  .dim-badge.b4 { background: rgba(100, 60, 180, 0.2); color: #A78BFA; }
+
+  .dim-text {
+    font-size: 0.82rem;
+    color: var(--white-dim);
+    font-weight: 300;
+  }
+
+  .mock-tip {
+    background: var(--teal-glow);
+    border: 1px solid var(--teal-border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    color: rgba(0, 212, 170, 0.85);
+    line-height: 1.5;
+  }
+
+  .mock-tip strong { color: var(--teal); font-weight: 500; }
+
+  /* ── AI FEATURES ── */
+  #features {
+    padding: 7rem 0;
+    background: var(--navy);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .features-header {
+    max-width: 560px;
+    margin-bottom: 4rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .feature-card {
+    background: var(--navy);
+    padding: 2.5rem;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .feature-card:hover { background: var(--navy-light); }
+
+  .feature-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--teal-glow);
+    border: 1px solid var(--teal-border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .feature-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+
+  .feature-body {
+    font-size: 0.9rem;
+    color: var(--white-dim);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .feature-tag {
+    margin-top: 1.25rem;
+    font-size: 0.72rem;
+    color: var(--teal);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .feature-tag::before {
+    content: '';
+    width: 16px;
+    height: 1px;
+    background: var(--teal);
+  }
+
+  /* ── OUTCOMES ── */
+  #outcomes {
+    padding: 7rem 0;
+  }
+
+  .outcomes-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .outcome-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .outcome-card {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .outcome-card:hover { border-color: var(--teal-border); }
+
+  .outcome-icon {
+    font-size: 1.5rem;
+    min-width: 36px;
+    padding-top: 0.1rem;
+  }
+
+  .outcome-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 0.35rem;
+  }
+
+  .outcome-body {
+    font-size: 0.85rem;
+    color: var(--white-dim);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ── CTA ── */
+  #cta {
+    padding: 7rem 0;
+    background: var(--navy);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #cta::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0, 212, 170, 0.06) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .cta-content {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--white);
+    margin-bottom: 1rem;
+    line-height: 1.1;
+  }
+
+  .cta-sub {
+    font-size: 1.05rem;
+    color: var(--white-dim);
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .cta-form {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 440px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .cta-input {
+    flex: 1;
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.85rem 1.25rem;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .cta-input::placeholder { color: var(--white-faint); }
+  .cta-input:focus { border-color: var(--teal-border); }
+
+  .cta-note {
+    font-size: 0.8rem;
+    color: var(--white-faint);
+  }
+
+  .cta-offers {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .cta-offer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--white-dim);
+  }
+
+  .cta-offer::before {
+    content: '✓';
+    color: var(--teal);
+    font-weight: 600;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 2.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white-dim);
+  }
+
+  .footer-logo span { color: var(--teal); }
+
+  .footer-note {
+    font-size: 0.8rem;
+    color: var(--white-faint);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { display: none; }
+    .pain-grid { grid-template-columns: 1fr; }
+    .solution-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .features-grid { grid-template-columns: 1fr; }
+    .outcomes-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+    .cta-form { flex-direction: column; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">CX3HQ</div>
+  <ul class="nav-links">
+    <li><a href="#problem">The Problem</a></li>
+    <li><a href="#solution">How it Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#cta" class="nav-cta">Book a Demo</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge">AI-powered · Human Performance Intelligence</div>
+    <h1>Unlock how your<br>team <em>actually works.</em></h1>
+    <p class="hero-sub">CX3 gives every person and every manager a living AI tool that turns deep self-knowledge into better communication, stronger results and daily action — permanently.</p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-primary">Get early access →</a>
+      <a href="#solution" class="btn-secondary">See how it works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">15 min</span>
+        <span class="stat-label">to complete assessment</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">6</span>
+        <span class="stat-label">dimensions of your profile</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">∞</span>
+        <span class="stat-label">daily AI coaching</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="container">
+    <div class="problem-header reveal">
+      <span class="section-label">The problem</span>
+      <h2 class="section-title">Your team is losing time, energy and results.<br>And you can't see why.</h2>
+      <p class="section-body">These are real themes from leadership conversations across organisations. Do any of these sound familiar?</p>
+    </div>
+    <div class="pain-grid reveal">
+      <div class="pain-card">
+        <p class="pain-quote">"I'm stuck in operational work. I have no time to actually lead."</p>
+        <span class="pain-theme">No time to lead</span>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"We communicate completely differently and it slows everything down."</p>
+        <span class="pain-theme">Communication friction</span>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"We did a programme three years ago. Nothing changed. It never stuck."</p>
+        <span class="pain-theme">Tools that don't stick</span>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"Some people are doing tasks completely wrong for who they are."</p>
+        <span class="pain-theme">Strengths wasted</span>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"People are burning out and I don't see it coming until it's too late."</p>
+        <span class="pain-theme">Hidden burnout</span>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"Everyone works in their own silo. We never think together."</p>
+        <span class="pain-theme">Team silos</span>
+      </div>
+    </div>
+    <p class="pain-note reveal">The problem is not the insight. The problem is that insight never becomes action.</p>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="container">
+    <div class="solution-layout">
+      <div>
+        <span class="section-label reveal">How it works</span>
+        <h2 class="section-title reveal">A people intelligence tool that doesn't stop at the report.</h2>
+        <p class="section-body reveal" style="margin-bottom: 3rem;">CX3 maps how each person naturally thinks, communicates and performs — then turns that into daily action for the whole team.</p>
+        <div class="solution-steps reveal">
+          <div class="step">
+            <span class="step-num">01</span>
+            <div>
+              <div class="step-title">Assess in 10 minutes</div>
+              <div class="step-body">Science-based questionnaire maps biological strengths, communication style, motivation and environment needs. 15 minutes, instant results. No fluff.</div>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-num">02</span>
+            <div>
+              <div class="step-title">Understand your team</div>
+              <div class="step-body">Every person gets a personal report. Managers get a full team dashboard — showing gaps, strengths and friction points.</div>
+            </div>
+          </div>
+          <div class="step">
+            <span class="step-num">03</span>
+            <div>
+              <div class="step-title">Act every single day</div>
+              <div class="step-body">The AI coach turns insight into action — before meetings, difficult conversations, and in moments of conflict. A weekly one-word check-in keeps your team's pulse live — 3 seconds of effort, real signal for your AI coach. It never stops.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="solution-visual reveal">
+        <div style="font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--white-faint);margin-bottom:0.6rem;text-align:right;">Example report</div>
+        <div class="mock-card">
+          <div class="mock-header">
+            <div>
+              <div style="font-size:0.7rem;color:var(--white-faint);margin-bottom:0.25rem;font-weight:300;">Sarah · Head of Sales</div>
+              <div class="mock-name">Strategic driver with a bias for action</div>
+            </div>
+            <span class="mock-tag">CX3</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--white-dim);font-weight:300;line-height:1.65;margin-bottom:1.5rem;">Sarah performs best when she leads with vision, not process. She takes in information visually and makes fast, intuitive decisions. Under pressure she becomes reactive — not because she lacks skill, but because she needs context first.</div>
+          <div class="mock-dims" style="margin-bottom:1.25rem;">
+            <div class="mock-dim">
+              <span class="dim-badge b1">Communication</span>
+              <span class="dim-text">Big-picture first — give her the why</span>
+            </div>
+            <div class="mock-dim">
+              <span class="dim-badge b2">Learning strength</span>
+              <span class="dim-text">Visual — use diagrams, not long text</span>
+            </div>
+            <div class="mock-dim">
+              <span class="dim-badge b3">Motivation</span>
+              <span class="dim-text">Driven by meaning, not money</span>
+            </div>
+            <div class="mock-dim">
+              <span class="dim-badge b4">Energy drain</span>
+              <span class="dim-text">Too many meetings kills her focus</span>
+            </div>
+          </div>
+          <div class="mock-tip" style="margin-bottom:0.75rem;">
+            <strong>For her manager:</strong> Before your next 1:1 — start with the strategic goal, not the task list. She will engage 3x more effectively.
+          </div>
+          <div class="mock-tip" style="background:var(--white-faint);border-color:var(--border);">
+            <strong style="color:var(--white);">For Sarah:</strong> Block 90 minutes of solo focus before 10am. That is when your best thinking happens — protect it.
+          </div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--white-faint);text-align:center;margin-top:1rem;font-style:italic;">Grounded in decades of research on how people naturally think, learn and communicate.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="features-header reveal">
+      <span class="section-label">The AI layer</span>
+      <h2 class="section-title">The report is just the door.<br>The AI is what's behind it.</h2>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">Personal AI coach</div>
+        <div class="feature-body">Each person can ask the AI anything based on their own profile. "How should I prepare for tomorrow's presentation?" — it already knows how they work. Practical, specific, always available.</div>
+        <div class="feature-tag">For individuals</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Communication translator</div>
+        <div class="feature-body">Before a difficult conversation, type what you want to say. The AI rewrites it in the exact format that will land best for that specific person's working style. No more missed messages.</div>
+        <div class="feature-tag">For teams</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Manager dashboard</div>
+        <div class="feature-body">Weekly team insights. "This person has three deadlines — they need quiet focus time." Specific, actionable, based on real profiles — not generic advice. Know how to lead each person better.</div>
+        <div class="feature-tag">For managers</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Conflict resolver</div>
+        <div class="feature-body">Two people clashing? Input both profiles and describe the situation. The AI explains exactly why the friction is happening based on style differences — and gives concrete steps to fix it.</div>
+        <div class="feature-tag">For leadership</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTCOMES -->
+<section id="outcomes">
+  <div class="container">
+    <div class="outcomes-layout">
+      <div>
+        <span class="section-label reveal">What changes</span>
+        <h2 class="section-title reveal">When people understand each other, everything moves faster.</h2>
+        <p class="section-body reveal">Better communication. Stronger decisions. Teams that actually work together. This is what happens when people stop guessing and start understanding.</p>
+      </div>
+      <div class="outcome-cards reveal">
+        <div class="outcome-card">
+          <div class="outcome-icon">⚡</div>
+          <div>
+            <div class="outcome-title">Faster decisions</div>
+            <div class="outcome-body">Management teams make decisions faster when they understand how each person processes information and what they need to say yes.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="outcome-icon">💬</div>
+          <div>
+            <div class="outcome-title">Communication that actually lands</div>
+            <div class="outcome-body">Messages get through. Feedback is received. Instructions are followed. Not because people try harder — but because they communicate in the right way for each person.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="outcome-icon">📈</div>
+          <div>
+            <div class="outcome-title">People performing at their best</div>
+            <div class="outcome-body">When people work in their natural strengths, performance improves without extra effort. Small role adjustments make a significant difference to results.</div>
+          </div>
+        </div>
+        <div class="outcome-card">
+          <div class="outcome-icon">🎯</div>
+          <div>
+            <div class="outcome-title">Leaders who actually lead</div>
+            <div class="outcome-body">Managers stop losing time in misunderstandings and conflict. They lead each person in the way that actually works — and get results instead of friction.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section id="story" style="padding:7rem 0;background:var(--black);border-top:1px solid var(--border);">
+  <div class="container">
+    <div style="max-width:780px;margin:0 auto;text-align:center;" class="reveal">
+      <span class="section-label">A real story</span>
+      <div style="font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;line-height:1.25;letter-spacing:-0.02em;color:var(--white);margin-bottom:2.5rem;">
+        "It's amazing to finally<br>understand the real problem."
+      </div>
+      <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:16px;padding:2.5rem;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),transparent);"></div>
+        <p style="font-size:1.05rem;color:var(--white-dim);font-weight:300;line-height:1.8;font-style:italic;margin-bottom:1.75rem;">
+          "A management team had been struggling for 5 years. One manager was micromanaging her team, losing motivation, heading toward burnout. In one session — using CX3's approach — we uncovered exactly why. Her boss's reaction: <strong style="color:var(--white);font-style:normal;">'It's amazing to finally understand the real problem.'</strong> That conversation is happening in a meeting today."
+        </p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:1rem;">
+          <div style="width:36px;height:36px;background:var(--teal-glow);border:1px solid var(--teal-border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;">👤</div>
+          <div style="text-align:left;">
+            <div style="font-size:0.85rem;font-weight:500;color:var(--white);">Senior Leader</div>
+            <div style="font-size:0.78rem;color:var(--white-faint);">Finnish organisation · Management team of 5</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:3rem;display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--teal);">5 years</div>
+          <div style="font-size:0.8rem;color:var(--white-dim);">of struggle — understood in one session</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--teal);">1 session</div>
+          <div style="font-size:0.8rem;color:var(--white-dim);">to uncover the real problem</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--teal);">Today</div>
+          <div style="font-size:0.8rem;color:var(--white-dim);">action already being taken</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-content reveal">
+      <span class="section-label">Early access</span>
+      <h2 class="cta-title">Ready to unlock how your team works?</h2>
+      <p class="cta-sub">We are looking for 5 teams to validate with. Get free access to the full assessment — and help shape the future of CX3.</p>
+      <div class="cta-form">
+        <input type="email" class="cta-input" placeholder="your@email.com">
+        <button class="btn-primary" onclick="handleSubmit()">Get access →</button>
+      </div>
+      <p class="cta-note">No credit card. No commitment. Just 10 minutes for your team.</p>
+      <div class="cta-offers">
+        <span class="cta-offer">Full team assessment</span>
+        <span class="cta-offer">Personal report per person</span>
+        <span class="cta-offer">Team communication analysis</span>
+        <span class="cta-offer">Manager overview</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">CX3HQ</div>
+  <div class="footer-note">© 2026 CX3 · Unlock how your team actually works.</div>
+</footer>
+
+<script>
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+
+// CTA submit
+function handleSubmit() {
+  const input = document.querySelector('.cta-input');
+  const btn = document.querySelector('.cta-form .btn-primary');
+  if (input.value && input.value.includes('@')) {
+    btn.textContent = '✓ You\'re on the list!';
+    btn.style.background = '#059669';
+    input.disabled = true;
+    btn.disabled = true;
+  } else {
+    input.style.borderColor = 'rgba(220,80,80,0.5)';
+    setTimeout(() => input.style.borderColor = '', 1500);
+  }
+}
+
+// Enter key on input
+document.querySelector('.cta-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleSubmit();
+});
+</script>
+</body>
+</html>

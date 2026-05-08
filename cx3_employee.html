@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CX3 — My Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#070B10;--navy:#0C1520;--navy-mid:#101C2C;--navy-light:#162238;
+  --teal:#00D4AA;--teal-dim:rgba(0,212,170,0.1);--teal-border:rgba(0,212,170,0.22);
+  --white:#EEF2F7;--white-dim:rgba(238,242,247,0.55);--white-faint:rgba(238,242,247,0.1);
+  --border:rgba(255,255,255,0.06);--red:#F05252;--amber:#F59E0B;--green:#10B981;
+  --purple:#8B5CF6;--blue:#3B82F6;
+  --font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;
+}
+body{background:var(--black);color:var(--white);font-family:var(--font-b);min-height:100vh;}
+
+/* TOP NAV */
+.topnav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(7,11,16,0.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0.875rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{font-family:var(--font-d);font-size:1rem;font-weight:700;color:var(--white);}
+.nav-logo span{color:var(--teal);}
+.nav-user{display:flex;align-items:center;gap:0.75rem;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:#1E3A5F;color:#5AABFF;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:0.8rem;font-weight:700;}
+.user-name{font-size:0.85rem;color:var(--white-dim);}
+.nav-tabs{display:flex;gap:0;border-bottom:none;}
+.nav-tab{padding:0.5rem 1rem;font-size:0.82rem;color:var(--white-dim);cursor:pointer;border:none;background:none;font-family:var(--font-b);border-bottom:2px solid transparent;transition:all 0.15s;}
+.nav-tab:hover{color:var(--white);}
+.nav-tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+
+/* MAIN */
+.main{padding:5rem 2rem 3rem;max-width:900px;margin:0 auto;}
+
+/* HERO */
+.hero-section{
+  background:linear-gradient(135deg,var(--navy-mid),var(--navy-light));
+  border:1px solid var(--teal-border);
+  border-radius:20px;padding:2rem;margin-bottom:1.5rem;
+  position:relative;overflow:hidden;
+  animation:fadeUp 0.5s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero-section::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),transparent);}
+.hero-greeting{font-size:0.78rem;color:var(--teal);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.5rem;}
+.hero-name{font-family:var(--font-d);font-size:1.8rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:0.4rem;}
+.hero-name span{color:var(--teal);}
+.hero-headline{font-size:1rem;color:var(--white-dim);font-weight:300;line-height:1.6;margin-bottom:1.5rem;}
+.hero-tags{display:flex;flex-wrap:wrap;gap:0.5rem;}
+.hero-tag{font-size:0.72rem;padding:0.25rem 0.75rem;border-radius:100px;font-weight:500;}
+
+/* CHECKIN */
+.checkin-bar{
+  background:var(--navy-mid);border:1px solid var(--border);
+  border-radius:14px;padding:1.25rem;margin-bottom:1.5rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  animation:fadeUp 0.5s ease 0.1s both;
+}
+.checkin-label{font-size:0.85rem;font-weight:500;color:var(--white);}
+.checkin-sub{font-size:0.72rem;color:var(--white-dim);margin-top:0.15rem;}
+.checkin-words{display:flex;gap:0.4rem;flex-wrap:wrap;}
+.word-btn{
+  padding:0.35rem 0.875rem;border-radius:100px;font-size:0.75rem;
+  border:1px solid var(--border);background:var(--navy-light);
+  color:var(--white-dim);cursor:pointer;font-family:var(--font-b);
+  transition:all 0.15s;
+}
+.word-btn:hover{border-color:var(--teal-border);color:var(--teal);}
+.word-btn.selected{background:var(--teal-dim);border-color:var(--teal-border);color:var(--teal);font-weight:600;}
+
+/* SECTION */
+.section-title{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--white-dim);margin-bottom:1rem;}
+
+/* CARDS */
+.card{background:var(--navy-mid);border:1px solid var(--border);border-radius:14px;padding:1.25rem;animation:fadeUp 0.5s ease both;}
+.card-label{font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:0.5rem;}
+.card-title{font-family:var(--font-d);font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:0.75rem;}
+.card-body{font-size:0.82rem;color:var(--white-dim);line-height:1.65;font-weight:300;}
+
+/* CHANNEL GRID */
+.channel-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.5rem;margin:0.75rem 0;}
+.channel-item{border-radius:8px;padding:0.6rem 0.5rem;text-align:center;}
+.channel-name{font-size:0.65rem;color:var(--white);font-weight:500;line-height:1.3;}
+.channel-state{font-size:0.6rem;margin-top:0.2rem;font-weight:600;}
+
+/* TIPS */
+.tip-list{display:flex;flex-direction:column;gap:0.5rem;}
+.tip-item{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:0.65rem 0.875rem 0.65rem 2rem;font-size:0.8rem;color:var(--white-dim);line-height:1.55;position:relative;}
+.tip-item::before{content:'→';position:absolute;left:0.65rem;top:0.65rem;color:var(--teal);font-size:0.75rem;}
+
+/* AI COACH CHAT */
+.chat-box{background:var(--navy-mid);border:1px solid var(--teal-border);border-radius:14px;overflow:hidden;}
+.chat-header{background:var(--teal-dim);border-bottom:1px solid var(--border);padding:1rem 1.25rem;display:flex;align-items:center;gap:0.75rem;}
+.chat-icon{width:34px;height:34px;background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.chat-title{font-family:var(--font-d);font-size:0.875rem;font-weight:600;color:var(--teal);}
+.chat-sub{font-size:0.7rem;color:rgba(0,212,170,0.6);margin-top:0.1rem;}
+.chat-messages{padding:1.25rem;display:flex;flex-direction:column;gap:0.75rem;max-height:320px;overflow-y:auto;}
+.chat-msg{border-radius:10px;padding:0.875rem 1rem;font-size:0.82rem;line-height:1.6;position:relative;padding-left:2.5rem;}
+.chat-msg::before{content:attr(data-e);position:absolute;left:0.75rem;top:0.875rem;font-size:1rem;}
+.chat-msg.ai{background:var(--navy);border:1px solid var(--border);color:var(--white-dim);}
+.chat-msg.user{background:var(--teal-dim);border:1px solid var(--teal-border);color:var(--white);text-align:right;padding-left:1rem;padding-right:2.5rem;}
+.chat-msg.user::before{left:auto;right:0.75rem;}
+.chat-input-row{display:flex;gap:0.5rem;padding:0 1.25rem 1.25rem;}
+.chat-input{flex:1;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:0.65rem 1rem;color:var(--white);font-family:var(--font-b);font-size:0.82rem;outline:none;transition:border-color 0.2s;}
+.chat-input::placeholder{color:var(--white-faint);}
+.chat-input:focus{border-color:var(--teal-border);}
+.chat-send{background:var(--teal);color:var(--black);border:none;border-radius:8px;padding:0.65rem 1.25rem;font-family:var(--font-b);font-size:0.82rem;font-weight:600;cursor:pointer;transition:opacity 0.2s;}
+.chat-send:hover{opacity:0.85;}
+
+/* COMM TRANSLATOR */
+.person-grid{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.875rem;}
+.p-btn{display:flex;align-items:center;gap:0.4rem;background:var(--navy-light);border:1px solid var(--border);border-radius:100px;padding:0.35rem 0.75rem;color:var(--white-dim);font-size:0.75rem;font-family:var(--font-b);cursor:pointer;transition:all 0.2s;}
+.p-btn.active{border-color:var(--teal-border);color:var(--teal);background:var(--teal-dim);}
+.p-avatar{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:700;}
+.msg-area{width:100%;background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:0.875rem;color:var(--white);font-family:var(--font-b);font-size:0.83rem;line-height:1.6;resize:vertical;min-height:90px;outline:none;transition:border-color 0.2s;margin-bottom:0.75rem;}
+.msg-area:focus{border-color:var(--teal-border);}
+.btn-translate{background:var(--teal);color:var(--black);border:none;padding:0.7rem 1.5rem;border-radius:8px;font-family:var(--font-d);font-weight:700;font-size:0.82rem;cursor:pointer;transition:all 0.2s;}
+.btn-translate:disabled{opacity:0.4;cursor:not-allowed;}
+
+/* USER MANUAL CARD */
+.manual-card{background:linear-gradient(135deg,var(--navy-mid),var(--navy-light));border:1px solid var(--teal-border);border-radius:16px;padding:1.75rem;position:relative;overflow:hidden;}
+.manual-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),transparent);}
+.manual-row{display:flex;gap:0.75rem;margin-bottom:0.65rem;align-items:flex-start;font-size:0.82rem;}
+.manual-key{font-weight:600;color:var(--white);min-width:130px;flex-shrink:0;}
+.manual-val{color:var(--white-dim);line-height:1.5;}
+.share-btn{background:var(--teal);color:var(--black);border:none;padding:0.65rem 1.5rem;border-radius:8px;font-family:var(--font-d);font-weight:700;font-size:0.82rem;cursor:pointer;margin-top:1.25rem;transition:all 0.2s;}
+.share-btn:hover{background:#00EEBB;}
+
+/* GRIDS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.one-col{margin-bottom:1.5rem;}
+
+/* TABS */
+.page-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.5rem;}
+.ptab{padding:0.6rem 1.25rem;font-size:0.8rem;color:var(--white-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font-b);}
+.ptab:hover{color:var(--white);}
+.ptab.active{color:var(--teal);border-bottom-color:var(--teal);}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="nav-logo">CX3HQ</div>
+  <div style="display:flex;gap:0;">
+    <button class="nav-tab active" onclick="switchPage(this,'profile')">My profile</button>
+    <button class="nav-tab" onclick="switchPage(this,'coach')">AI coach</button>
+    <button class="nav-tab" onclick="switchPage(this,'translator')">Comm translator</button>
+    <button class="nav-tab" onclick="switchPage(this,'card')">My user manual</button>
+  </div>
+  <div class="nav-user">
+    <div class="user-avatar">SV</div>
+    <div class="user-name">Sarah V.</div>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- WEEKLY CHECK-IN -->
+  <div class="checkin-bar" style="animation-delay:0s">
+    <div>
+      <div class="checkin-label">How are you feeling this week?</div>
+      <div class="checkin-sub">One word — 3 seconds. Your manager sees this to support you better.</div>
+    </div>
+    <div class="checkin-words">
+      <button class="word-btn" onclick="selectWord(this)">Energised</button>
+      <button class="word-btn selected" onclick="selectWord(this)">Stretched</button>
+      <button class="word-btn" onclick="selectWord(this)">Focused</button>
+      <button class="word-btn" onclick="selectWord(this)">Stuck</button>
+      <button class="word-btn" onclick="selectWord(this)">Tired</button>
+      <button class="word-btn" onclick="selectWord(this)">Excited</button>
+    </div>
+  </div>
+
+  <!-- PAGE: MY PROFILE -->
+  <div id="page-profile">
+
+    <!-- HERO -->
+    <div class="hero-section" style="animation-delay:0.05s">
+      <div class="hero-greeting">Your performance profile</div>
+      <div class="hero-name">Sarah<span>'s</span> natural strengths</div>
+      <div class="hero-headline">Big-picture visionary, auditory-speaking dominant and self-driven. You perform best when you lead with vision and have full ownership of outcomes. Your brain processes context before details — always.</div>
+      <div class="hero-tags">
+        <span class="hero-tag" style="background:var(--teal-dim);color:var(--teal);border:1px solid var(--teal-border);">🧠 Right-brain dominant</span>
+        <span class="hero-tag" style="background:rgba(59,130,246,0.1);color:#5AABFF;border:1px solid rgba(59,130,246,0.2);">👂 Auditory-speaking</span>
+        <span class="hero-tag" style="background:rgba(139,92,246,0.1);color:#A78BFA;border:1px solid rgba(139,92,246,0.2);">🤸 Kinesthetic</span>
+        <span class="hero-tag" style="background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.2);">⏰ Morning peak</span>
+        <span class="hero-tag" style="background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);">🔑 High autonomy</span>
+      </div>
+    </div>
+
+    <!-- SENSORY CHANNELS -->
+    <div class="one-col" style="animation-delay:0.1s">
+      <div class="section-title">Your sensory channels</div>
+      <div class="card" style="animation-delay:0.1s">
+        <div class="card-label">How you best receive information</div>
+        <div class="channel-grid">
+          <div class="channel-item" style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);">
+            <div class="channel-name">Auditory Speaking</div>
+            <div class="channel-state" style="color:var(--teal);">Strength</div>
+          </div>
+          <div class="channel-item" style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);">
+            <div class="channel-name">Kinesthetic Doing</div>
+            <div class="channel-state" style="color:var(--teal);">Strength</div>
+          </div>
+          <div class="channel-item" style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.2);">
+            <div class="channel-name">Auditory Listening</div>
+            <div class="channel-state" style="color:var(--teal);">Strength</div>
+          </div>
+          <div class="channel-item" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+            <div class="channel-name">Visual Internal</div>
+            <div class="channel-state" style="color:var(--amber);">Flexible</div>
+          </div>
+          <div class="channel-item" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+            <div class="channel-name">Intuition</div>
+            <div class="channel-state" style="color:var(--amber);">Flexible</div>
+          </div>
+          <div class="channel-item" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+            <div class="channel-name">Visual External</div>
+            <div class="channel-state" style="color:var(--amber);">Flexible</div>
+          </div>
+          <div class="channel-item" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+            <div class="channel-name">Kinesthetic Hands</div>
+            <div class="channel-state" style="color:var(--amber);">Flexible</div>
+          </div>
+          <div class="channel-item" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);">
+            <div class="channel-name">Auditory Internal</div>
+            <div class="channel-state" style="color:var(--amber);">Flexible</div>
+          </div>
+          <div class="channel-item" style="background:rgba(240,82,82,0.08);border:1px solid rgba(240,82,82,0.2);">
+            <div class="channel-name">Tactile Hands</div>
+            <div class="channel-state" style="color:#F87171;">Reduce</div>
+          </div>
+          <div class="channel-item" style="background:rgba(240,82,82,0.08);border:1px solid rgba(240,82,82,0.2);">
+            <div class="channel-name">Reading Text</div>
+            <div class="channel-state" style="color:#F87171;">Reduce</div>
+          </div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--white-dim);line-height:1.5;margin-top:0.25rem;">
+          <strong style="color:var(--teal);">Strength</strong> = how you learn best. 
+          <strong style="color:var(--amber);">Flexible</strong> = works when motivated. 
+          <strong style="color:#F87171;">Reduce</strong> = avoid in demanding situations — it costs energy.
+        </div>
+      </div>
+    </div>
+
+    <!-- TWO COLUMN -->
+    <div class="two-col">
+      <div class="card" style="animation-delay:0.15s">
+        <div class="card-label">Thinking style</div>
+        <div class="card-title">Big-picture first</div>
+        <div class="card-body">You process simultaneously — seeing patterns, connections and the whole picture at once. You need the why and the context before you can engage with the details. This is biological, not a preference.</div>
+      </div>
+      <div class="card" style="animation-delay:0.2s">
+        <div class="card-label">Peak performance time</div>
+        <div class="card-title">⏰ Before noon</div>
+        <div class="card-body">Your sharpest thinking happens in the morning. Protect this time for your most important and demanding work. Meetings and admin in the afternoon — deep work in the morning.</div>
+      </div>
+      <div class="card" style="animation-delay:0.25s">
+        <div class="card-label">Environment</div>
+        <div class="card-title">Movement + background noise</div>
+        <div class="card-body">You concentrate better with background sounds and when you can move. Silence and complete stillness actually reduce your performance. This is not restlessness — it is how your brain works.</div>
+      </div>
+      <div class="card" style="animation-delay:0.3s">
+        <div class="card-label">Social & autonomy</div>
+        <div class="card-title">Pairs + full ownership</div>
+        <div class="card-body">You work best with one thinking partner and with full ownership of outcomes. Being managed on process rather than results costs you significant energy and motivation.</div>
+      </div>
+    </div>
+
+    <!-- PRACTICAL TIPS FOR YOURSELF -->
+    <div class="one-col">
+      <div class="section-title">Practical tips for you</div>
+      <div class="card" style="animation-delay:0.35s">
+        <div class="tip-list">
+          <div class="tip-item">Every morning before opening email, record a 2-minute voice memo of your 3 priorities. Speaking activates your strongest channel and sets your focus before distractions hit.</div>
+          <div class="tip-item">Before a difficult task, always ask yourself: what is the big picture goal here? What am I actually trying to achieve? This activates your natural processing strength.</div>
+          <div class="tip-item">In meetings where pre-read materials have already been shared, try closing your laptop and focusing only on listening. You process better through hearing than through reading.</div>
+          <div class="tip-item">When you feel stuck, talk it out loud — with a colleague, or even alone. Your auditory-speaking channel processes problems by voicing them.</div>
+          <div class="tip-item">Protect at least one morning per week for deep, uninterrupted work. Your best thinking happens before noon — guard it like a meeting you cannot move.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PAGE: AI COACH -->
+  <div id="page-coach" style="display:none">
+    <div class="section-title" style="margin-bottom:1rem;">Your personal AI coach</div>
+    <div class="chat-box">
+      <div class="chat-header">
+        <div class="chat-icon">🤖</div>
+        <div>
+          <div class="chat-title">CX3 AI — your personal coach</div>
+          <div class="chat-sub">I know your full profile — ask me anything about how you work best</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="employee-chat-messages">
+        <div class="chat-msg ai" data-e="💡">
+          <strong>Good morning, Sarah.</strong> You said you are feeling <strong>Stretched</strong> this week. Based on your profile — you are auditory-speaking dominant and a big-picture thinker — the most common cause of that feeling for people like you is information overload in the wrong format. Too many emails, too many details, not enough conversations. Try replacing one email thread today with a 5-minute call and notice the difference.
+        </div>
+        <div class="chat-msg ai" data-e="🎯">
+          <strong>This week's personal task for you:</strong> Every morning before opening email, record a 2-minute voice memo of your top 3 priorities. Speaking activates your strongest biological channel. Do this for 7 days and notice how your focus changes.
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="employee-chat-input" placeholder="Ask anything... e.g. 'How do I prepare for a difficult conversation?'" onkeydown="if(event.key==='Enter')sendEmployeeChat()">
+        <button class="chat-send" onclick="sendEmployeeChat()">Ask →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: COMM TRANSLATOR -->
+  <div id="page-translator" style="display:none">
+    <div class="section-title" style="margin-bottom:0.5rem;">Communication translator</div>
+    <div style="font-size:0.82rem;color:var(--white-dim);margin-bottom:1.25rem;line-height:1.6;">Write a message you want to send to a colleague. The AI rewrites it in the format that will land best for <em>their</em> biological profile — not just a nicer tone, but the right structure for how their brain works.</div>
+
+    <div class="card" style="margin-bottom:1rem;animation-delay:0.05s">
+      <div class="card-label" style="margin-bottom:0.75rem;">Who are you writing to?</div>
+      <div class="person-grid" id="emp-person-selector">
+        <button onclick="empSelectPerson(this,'manager')" class="p-btn">
+          <div class="p-avatar" style="background:#1A3A3D;color:#2DD4BF;">M</div> My manager
+        </button>
+        <button onclick="empSelectPerson(this,'marcus')" class="p-btn">
+          <div class="p-avatar" style="background:#1A3D2B;color:#4ECB81;">MK</div> Marcus
+        </button>
+        <button onclick="empSelectPerson(this,'anna')" class="p-btn">
+          <div class="p-avatar" style="background:#3D1A1A;color:#F87171;">AL</div> Anna
+        </button>
+        <button onclick="empSelectPerson(this,'jaakko')" class="p-btn">
+          <div class="p-avatar" style="background:#2A1A3D;color:#A78BFA;">JP</div> Jaakko
+        </button>
+        <button onclick="empSelectPerson(this,'elena')" class="p-btn">
+          <div class="p-avatar" style="background:#1A3A3D;color:#2DD4BF;">EH</div> Elena
+        </button>
+      </div>
+      <div id="emp-profile-reminder" style="display:none;font-size:0.78rem;color:var(--white-dim);background:var(--navy-light);border-radius:8px;padding:0.65rem 0.875rem;margin-bottom:0.875rem;line-height:1.5;"></div>
+      <textarea class="msg-area" id="emp-translator-input" placeholder="Write your message as you normally would..."></textarea>
+      <button class="btn-translate" id="emp-translate-btn" onclick="empTranslate()" disabled>Translate for this person →</button>
+    </div>
+
+    <div id="emp-translation-output"></div>
+  </div>
+
+  <!-- PAGE: USER MANUAL CARD -->
+  <div id="page-card" style="display:none">
+    <div class="section-title" style="margin-bottom:0.5rem;">My user manual card</div>
+    <div style="font-size:0.82rem;color:var(--white-dim);margin-bottom:1.25rem;line-height:1.6;">Share this with your manager and key colleagues so they understand how to work with you at your best. This is the simplest thing you can do to improve collaboration immediately.</div>
+
+    <div class="manual-card">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        <div style="width:52px;height:52px;border-radius:50%;background:#1E3A5F;color:#5AABFF;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:1.1rem;font-weight:700;">SV</div>
+        <div>
+          <div style="font-family:var(--font-d);font-size:1.1rem;font-weight:700;color:var(--white);">Sarah V. — Head of Sales</div>
+          <div style="font-size:0.78rem;color:var(--teal);margin-top:0.1rem;">Big-picture visionary · Auditory-speaking · Morning peak</div>
+        </div>
+      </div>
+
+      <div class="manual-row"><span class="manual-key">🧠 Give me:</span><span class="manual-val">The big picture and purpose first — always. I cannot engage properly until I understand the why.</span></div>
+      <div class="manual-row"><span class="manual-key">👂 Talk to me:</span><span class="manual-val">Verbally — a short call beats a long email every time for me.</span></div>
+      <div class="manual-row"><span class="manual-key">⏰ Best time:</span><span class="manual-val">Morning before noon — that is when my sharpest thinking happens. Protect this time.</span></div>
+      <div class="manual-row"><span class="manual-key">🔑 I need:</span><span class="manual-val">Full ownership of outcomes. Tell me what needs to happen — let me decide how.</span></div>
+      <div class="manual-row"><span class="manual-key">🔋 Drains me:</span><span class="manual-val">Long email chains, micromanagement, too many details before context.</span></div>
+      <div class="manual-row"><span class="manual-key">⚡ You'll get best from me when:</span><span class="manual-val">You trust me with something meaningful and give me space to run with it.</span></div>
+
+      <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--white-faint);font-style:italic;">
+        Generated by CX3 · Based on biological assessment · Not a personality type — this is how I naturally work.
+      </div>
+      <button class="share-btn" onclick="shareCard()">Share this card →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchPage(btn, page) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  ['profile','coach','translator','card'].forEach(p => {
+    document.getElementById('page-'+p).style.display = p === page ? 'block' : 'none';
+  });
+}
+
+function selectWord(btn) {
+  document.querySelectorAll('.word-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  setTimeout(() => {
+    const msg = document.createElement('div');
+    msg.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;background:var(--teal);color:var(--black);padding:0.75rem 1.25rem;border-radius:10px;font-size:0.82rem;font-weight:600;z-index:200;animation:fadeUp 0.3s ease both;';
+    msg.textContent = `✓ "${btn.textContent}" saved — your manager will see this`;
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 3000);
+  }, 100);
+}
+
+function shareCard() {
+  const btn = event.target;
+  btn.textContent = '✓ Link copied to clipboard!';
+  btn.style.background = 'var(--green)';
+  setTimeout(() => {
+    btn.textContent = 'Share this card →';
+    btn.style.background = 'var(--teal)';
+  }, 2500);
+}
+
+// EMPLOYEE AI CHAT
+const empResponses = {
+  default: [
+    "Based on your auditory-speaking strength — when something feels complicated or unclear, talk it out loud. You do not need a perfect conversation partner. Even explaining the problem to yourself out loud will help you process it. This is biological, not a technique.",
+    "Your peak time is before noon. If something important is not getting done, ask yourself: am I trying to do my best thinking at the wrong time of day? Protect at least one morning block per week for your most demanding work.",
+    "You are a big-picture thinker. When you feel overwhelmed by details, step back and reconnect to the overall goal. Ask: what am I actually trying to achieve here? That question reactivates your natural processing strength.",
+    "Your movement need is real and biological. If you feel stuck or unfocused, stand up and walk around for 5 minutes. Your brain genuinely works better when your body is moving — this is not restlessness.",
+  ],
+  prepare: "For a difficult conversation, here is how to prepare based on your profile. First — talk it through out loud before the meeting. Literally say out loud what you want to communicate. This activates your auditory-speaking channel and helps you organise your thoughts. Second — start the conversation with the big picture: what outcome do you both want? Third — if the other person is a detail or sequential thinker, give them concrete specifics after you have set the context. Your instinct will be to stay big-picture — notice that and add the details they need.",
+  focus: "When you need to focus deeply, here is what works for your profile: morning is essential — do not schedule this in the afternoon. Background noise or music helps — silence actually hurts your concentration. Talk your priorities out loud before starting. And if possible, work standing or moving for at least part of the session. These are not productivity hacks — they are your biological operating conditions.",
+  feedback: "When giving feedback to someone, think about their profile first. For a sequential left-brain thinker like Marcus — give specific, structured, written feedback with clear examples. For a big-picture thinker like yourself — connect feedback to the bigger picture and purpose. The communication translator tab can help you rewrite any feedback message for the right person.",
+};
+
+function sendEmployeeChat() {
+  const input = document.getElementById('employee-chat-input');
+  const val = input.value.trim().toLowerCase();
+  if (!val) return;
+  const msgs = document.getElementById('employee-chat-messages');
+  const userMsg = document.createElement('div');
+  userMsg.className = 'chat-msg user';
+  userMsg.setAttribute('data-e','💬');
+  userMsg.textContent = input.value;
+  msgs.appendChild(userMsg);
+  input.value = '';
+  setTimeout(() => {
+    let r;
+    if (val.includes('prepar') || val.includes('conversation') || val.includes('difficult')) r = empResponses.prepare;
+    else if (val.includes('focus') || val.includes('concentrat') || val.includes('stuck')) r = empResponses.focus;
+    else if (val.includes('feedback') || val.includes('colleague')) r = empResponses.feedback;
+    else r = empResponses.default[Math.floor(Math.random()*empResponses.default.length)];
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'chat-msg ai';
+    aiMsg.setAttribute('data-e','🤖');
+    aiMsg.innerHTML = r;
+    msgs.appendChild(aiMsg);
+    aiMsg.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }, 700);
+}
+
+// EMPLOYEE COMM TRANSLATOR
+let empSelectedPerson = null;
+const empPersonData = {
+  manager: {name:'Your manager', thinking:'flexible', channels:['Reading','Visual'], guide:{dos:['Structure your request clearly','Give specific outcomes and timelines','Send a written summary after verbal discussions'],donts:['Do not be vague about what you need','Avoid very long unstructured messages']}},
+  marcus: {name:'Marcus', thinking:'left', channels:['Reading','Visual-external'], guide:{dos:['Give him written, structured details','Be specific and factual','Send in advance so he can process'],donts:['Do not expect quick verbal reactions','Avoid vague open asks']}},
+  anna: {name:'Anna', thinking:'right', channels:['Kinesthetic','Visual-internal'], guide:{dos:['Lead with purpose and meaning','Keep it short and direct','Ask for her view'],donts:['Avoid process-heavy details','Do not over-explain']}},
+  jaakko: {name:'Jaakko', thinking:'left', channels:['Reading','Visual-charts'], guide:{dos:['Send in writing in advance','Include data and structure','Give thinking time'],donts:['Never surprise him in meetings','Avoid vague requests']}},
+  elena: {name:'Elena', thinking:'flexible', channels:['Auditory-speaking','Kinesthetic'], guide:{dos:['Quick call works better than email','Keep energy up and direct'],donts:['Avoid long passive messages','Do not isolate her from discussion']}},
+};
+
+function empSelectPerson(btn, id) {
+  empSelectedPerson = id;
+  document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const p = empPersonData[id];
+  const r = document.getElementById('emp-profile-reminder');
+  r.style.display = 'block';
+  r.innerHTML = `<strong style="color:var(--white);">${p.name}</strong> — ${p.thinking === 'right' ? '🧠 Big-picture thinker' : p.thinking === 'left' ? '🧠 Sequential thinker' : '🧠 Flexible'} · Top channels: <strong style="color:var(--teal);">${p.channels.join(', ')}</strong>`;
+  document.getElementById('emp-translate-btn').disabled = false;
+}
+
+function empTranslate() {
+  const input = document.getElementById('emp-translator-input').value.trim();
+  if (!input || !empSelectedPerson) return;
+  const p = empPersonData[empSelectedPerson];
+  const btn = document.getElementById('emp-translate-btn');
+  btn.textContent = 'Translating...';
+  btn.disabled = true;
+  setTimeout(() => {
+    let translated = '';
+    if (p.thinking === 'left') {
+      translated = `Hi ${p.name},\n\nHere is what I would like to discuss:\n\n• ${input.substring(0,70)}...\n• Suggested next step: [specific action]\n• By: [date]\n\nLet me know if this works or if you need more detail.`;
+    } else if (p.thinking === 'right') {
+      translated = `Hey ${p.name} — quick thought. ${input.substring(0,80)}... What is your instinct on this? Happy to chat for 5 minutes if helpful.`;
+    } else {
+      translated = `Hi ${p.name}, ${input.substring(0,90)}... Would a quick call or message work better for you?`;
+    }
+    const out = document.getElementById('emp-translation-output');
+    out.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+        <div class="card" style="animation:none;"><div class="card-label">❌ Original</div><div class="card-body" style="font-style:italic;">"${input}"</div></div>
+        <div class="card" style="animation:none;border-color:var(--teal-border);position:relative;overflow:hidden;">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);"></div>
+          <div class="card-label" style="color:var(--teal);">✅ For ${p.name}</div>
+          <div class="card-body">${translated.replace(/\n/g,'<br>')}</div>
+        </div>
+      </div>
+      <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:1rem;font-size:0.78rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div><div style="color:var(--green);font-weight:600;margin-bottom:0.4rem;">✅ Works for ${p.name}</div>${p.guide.dos.map(d=>`<div style="color:var(--white-dim);margin-bottom:0.2rem;">• ${d}</div>`).join('')}</div>
+          <div><div style="color:var(--red);font-weight:600;margin-bottom:0.4rem;">❌ Avoid</div>${p.guide.donts.map(d=>`<div style="color:var(--white-dim);margin-bottom:0.2rem;">• ${d}</div>`).join('')}</div>
+        </div>
+      </div>`;
+    btn.textContent = 'Translate for this person →';
+    btn.disabled = false;
+  }, 800);
+}
+</script>
+</body>
+</html>

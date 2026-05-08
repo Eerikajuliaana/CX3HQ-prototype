@@ -1,0 +1,2269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CX3 — Manager Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #070B10;
+  --navy: #0C1520;
+  --navy-mid: #101C2C;
+  --navy-light: #162238;
+  --teal: #00D4AA;
+  --teal-dim: rgba(0,212,170,0.12);
+  --teal-border: rgba(0,212,170,0.22);
+  --white: #EEF2F7;
+  --white-dim: rgba(238,242,247,0.5);
+  --white-faint: rgba(238,242,247,0.1);
+  --border: rgba(255,255,255,0.06);
+  --red: #F05252;
+  --red-dim: rgba(240,82,82,0.12);
+  --amber: #F59E0B;
+  --amber-dim: rgba(245,158,11,0.12);
+  --green: #10B981;
+  --green-dim: rgba(16,185,129,0.12);
+  --blue: #3B82F6;
+  --blue-dim: rgba(59,130,246,0.12);
+  --purple: #8B5CF6;
+  --purple-dim: rgba(139,92,246,0.12);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --sidebar: 220px;
+}
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar);
+  min-height: 100vh;
+  background: var(--navy);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 10;
+}
+
+.sidebar-logo {
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-logo-text {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.sidebar-logo-text span { color: var(--teal); }
+
+.sidebar-logo-sub {
+  font-size: 0.7rem;
+  color: var(--white-dim);
+  margin-top: 0.2rem;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-section {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white-faint);
+  padding: 0 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-nav { list-style: none; }
+
+.sidebar-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 1.25rem;
+  color: var(--white-dim);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all 0.15s;
+  border-radius: 0;
+}
+
+.sidebar-nav li a:hover,
+.sidebar-nav li a.active {
+  color: var(--white);
+  background: var(--white-faint);
+}
+
+.sidebar-nav li a.active {
+  color: var(--teal);
+  background: var(--teal-dim);
+  border-right: 2px solid var(--teal);
+}
+
+.sidebar-nav li a .icon { font-size: 1rem; min-width: 18px; }
+
+.sidebar-team {
+  padding: 1rem 1.25rem;
+  flex: 1;
+}
+
+.sidebar-team-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white-faint);
+  margin-bottom: 0.75rem;
+}
+
+.sidebar-member {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.sidebar-member:hover { background: var(--white-faint); padding-left: 0.5rem; }
+
+.member-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.member-info { flex: 1; min-width: 0; }
+.member-name { font-size: 0.8rem; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.member-role { font-size: 0.7rem; color: var(--white-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.member-status {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* MAIN */
+.main {
+  margin-left: var(--sidebar);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: 56px;
+  background: rgba(7,11,16,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.topbar-team {
+  font-size: 0.75rem;
+  color: var(--white-dim);
+  background: var(--white-faint);
+  border: 1px solid var(--border);
+  padding: 0.2rem 0.65rem;
+  border-radius: 100px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.alert-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--red-dim);
+  border: 1px solid rgba(240,82,82,0.3);
+  color: var(--red);
+  padding: 0.3rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  animation: alertPulse 3s infinite;
+}
+
+@keyframes alertPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.alert-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--red);
+  border-radius: 50%;
+}
+
+.content {
+  padding: 2rem;
+  flex: 1;
+}
+
+/* SECTION HEADER */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white-dim);
+}
+
+/* ALERT CARDS */
+.alerts-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.alert-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.alert-card:hover { border-color: rgba(255,255,255,0.15); }
+
+.alert-card.red { border-left: 3px solid var(--red); }
+.alert-card.amber { border-left: 3px solid var(--amber); }
+.alert-card.teal { border-left: 3px solid var(--teal); }
+
+.alert-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.alert-icon.red { background: var(--red-dim); }
+.alert-icon.amber { background: var(--amber-dim); }
+.alert-icon.teal { background: var(--teal-dim); }
+
+.alert-content { flex: 1; }
+
+.alert-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.25rem;
+}
+
+.alert-body {
+  font-size: 0.8rem;
+  color: var(--white-dim);
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+.alert-person {
+  font-size: 0.7rem;
+  color: var(--white-faint);
+  margin-top: 0.4rem;
+  font-weight: 400;
+}
+
+.alert-action {
+  font-size: 0.75rem;
+  color: var(--teal);
+  font-weight: 500;
+  white-space: nowrap;
+  padding-top: 0.15rem;
+}
+
+/* TEAM GRID */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.member-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.member-card:hover {
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+
+.member-card.active {
+  border-color: var(--teal-border);
+  background: var(--navy-light);
+}
+
+.member-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 14px 14px 0 0;
+}
+
+.member-card.status-green::before { background: var(--green); }
+.member-card.status-amber::before { background: var(--amber); }
+.member-card.status-red::before { background: var(--red); }
+
+.card-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 auto 0.75rem;
+}
+
+.card-name {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--white);
+  text-align: center;
+  margin-bottom: 0.15rem;
+}
+
+.card-role {
+  font-size: 0.7rem;
+  color: var(--white-dim);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.card-dims {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dim-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.dim-label {
+  font-size: 0.65rem;
+  color: var(--white-dim);
+  white-space: nowrap;
+  flex: 1;
+}
+
+.dim-bar {
+  width: 60px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.dim-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.card-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 0.3rem 0.5rem;
+  border-radius: 100px;
+}
+
+.card-status.green { background: var(--green-dim); color: var(--green); }
+.card-status.amber { background: var(--amber-dim); color: var(--amber); }
+.card-status.red { background: var(--red-dim); color: var(--red); }
+
+/* DETAIL PANEL */
+.detail-panel {
+  background: var(--navy-mid);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  display: none;
+}
+
+.detail-panel.visible { display: block; animation: slideDown 0.25s ease; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem 1.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--navy-light);
+}
+
+.detail-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.detail-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.detail-role {
+  font-size: 0.8rem;
+  color: var(--white-dim);
+  margin-top: 0.1rem;
+}
+
+.detail-headline {
+  font-size: 0.85rem;
+  color: var(--teal);
+  margin-top: 0.3rem;
+  font-weight: 400;
+}
+
+.detail-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.detail-col {
+  padding: 1.5rem 1.75rem;
+  border-right: 1px solid var(--border);
+}
+
+.detail-col:last-child { border-right: none; }
+
+.detail-col-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 1rem;
+}
+
+.profile-rows { display: flex; flex-direction: column; gap: 0.65rem; }
+
+.profile-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.profile-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.18rem 0.55rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  min-width: 90px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.b1 { background: rgba(14,99,175,0.2); color: #5AABFF; }
+.b2 { background: rgba(16,120,60,0.2); color: #4ECB81; }
+.b3 { background: rgba(160,100,10,0.2); color: #F5A623; }
+.b4 { background: rgba(100,60,180,0.2); color: #A78BFA; }
+.b5 { background: rgba(240,82,82,0.15); color: #F87171; }
+.b6 { background: rgba(16,185,129,0.15); color: #34D399; }
+
+.profile-text {
+  font-size: 0.8rem;
+  color: var(--white-dim);
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+.tip-cards { display: flex; flex-direction: column; gap: 0.65rem; }
+
+.tip-card {
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: var(--white-dim);
+  line-height: 1.55;
+  font-weight: 300;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.tip-card::before {
+  content: '→';
+  position: absolute;
+  left: 0.6rem;
+  top: 0.75rem;
+  color: var(--teal);
+  font-size: 0.75rem;
+}
+
+.conflict-box {
+  margin-top: 1rem;
+  background: var(--red-dim);
+  border: 1px solid rgba(240,82,82,0.25);
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  font-size: 0.8rem;
+  color: rgba(240,82,82,0.9);
+  line-height: 1.55;
+}
+
+.conflict-box strong { color: var(--red); font-weight: 500; }
+
+/* TEAM MAP */
+.team-map-section {
+  margin-bottom: 2rem;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.map-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.map-card-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--white-dim);
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.spectrum {
+  margin-bottom: 1rem;
+}
+
+.spectrum-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: var(--white-faint);
+  margin-bottom: 0.4rem;
+}
+
+.spectrum-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.spectrum-dots {
+  position: absolute;
+  inset: 0;
+}
+
+.s-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--black);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.s-dot:hover { transform: translate(-50%, -50%) scale(1.3); }
+
+.spectrum-name {
+  font-size: 0.65rem;
+  color: var(--white-dim);
+  margin-bottom: 0.15rem;
+}
+
+/* AI COACH */
+.ai-section { margin-bottom: 2rem; }
+
+.ai-box {
+  background: var(--navy-mid);
+  border: 1px solid var(--teal-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ai-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--teal-dim);
+}
+
+.ai-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--teal-dim);
+  border: 1px solid var(--teal-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.ai-title {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--teal);
+}
+
+.ai-sub {
+  font-size: 0.72rem;
+  color: rgba(0,212,170,0.6);
+  margin-top: 0.1rem;
+}
+
+.ai-messages {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ai-message {
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  font-size: 0.82rem;
+  color: var(--white-dim);
+  line-height: 1.6;
+  position: relative;
+  padding-left: 2.5rem;
+}
+
+.ai-message::before {
+  content: attr(data-emoji);
+  position: absolute;
+  left: 0.75rem;
+  top: 0.875rem;
+  font-size: 1rem;
+}
+
+.ai-message strong { color: var(--white); font-weight: 500; }
+
+.ai-input-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1.25rem 1.25rem;
+}
+
+.ai-input {
+  flex: 1;
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ai-input::placeholder { color: var(--white-faint); }
+.ai-input:focus { border-color: var(--teal-border); }
+
+.ai-send {
+  background: var(--teal);
+  color: var(--black);
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.25rem;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.ai-send:hover { opacity: 0.85; }
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.8rem;
+  color: var(--white-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+.tab:hover { color: var(--white); }
+.tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+/* MISC */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 100px;
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.badge.green { background: var(--green-dim); color: var(--green); }
+.badge.amber { background: var(--amber-dim); color: var(--amber); }
+.badge.red { background: var(--red-dim); color: var(--red); }
+
+.prototype-banner {
+  background: var(--amber-dim);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+  font-size: 0.78rem;
+  color: var(--amber);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">CX3HQ</div>
+    <div class="sidebar-logo-sub">Manager Dashboard</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Navigation</div>
+    <ul class="sidebar-nav">
+      <li><a href="#" class="active"><span class="icon">⚡</span> Overview</a></li>
+      <li><a href="#"><span class="icon">👥</span> Team profiles</a></li>
+      <li><a href="#"><span class="icon">💬</span> Communication</a></li>
+      <li><a href="#"><span class="icon">🎯</span> Insights</a></li>
+      <li><a href="#"><span class="icon">🤖</span> AI Coach</a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-team">
+    <div class="sidebar-team-label">Sales Team · 5 people</div>
+    <div class="sidebar-member" onclick="showMember(0)">
+      <div class="member-avatar" style="background:#1E3A5F;color:#5AABFF;">SV</div>
+      <div class="member-info">
+        <div class="member-name">Sarah V.</div>
+        <div class="member-role">Head of Sales</div>
+      </div>
+      <div class="member-status" style="background:var(--amber)"></div>
+    </div>
+    <div class="sidebar-member" onclick="showMember(1)">
+      <div class="member-avatar" style="background:#1A3D2B;color:#4ECB81;">MK</div>
+      <div class="member-info">
+        <div class="member-name">Marcus K.</div>
+        <div class="member-role">Sales Manager</div>
+      </div>
+      <div class="member-status" style="background:var(--green)"></div>
+    </div>
+    <div class="sidebar-member" onclick="showMember(2)">
+      <div class="member-avatar" style="background:#3D1A1A;color:#F87171;">AL</div>
+      <div class="member-info">
+        <div class="member-name">Anna L.</div>
+        <div class="member-role">Senior AE</div>
+      </div>
+      <div class="member-status" style="background:var(--red)"></div>
+    </div>
+    <div class="sidebar-member" onclick="showMember(3)">
+      <div class="member-avatar" style="background:#2A1A3D;color:#A78BFA;">JP</div>
+      <div class="member-info">
+        <div class="member-name">Jaakko P.</div>
+        <div class="member-role">Account Exec</div>
+      </div>
+      <div class="member-status" style="background:var(--green)"></div>
+    </div>
+    <div class="sidebar-member" onclick="showMember(4)">
+      <div class="member-avatar" style="background:#1A3A3D;color:#2DD4BF;">EH</div>
+      <div class="member-info">
+        <div class="member-name">Elena H.</div>
+        <div class="member-role">SDR Lead</div>
+      </div>
+      <div class="member-status" style="background:var(--green)"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Team Overview</div>
+      <div class="topbar-team">Sales Team · Monday morning briefing</div>
+    </div>
+    <div class="topbar-right">
+      <div class="alert-pill" onclick="scrollToAlerts()">
+        <div class="alert-dot"></div>
+        3 alerts need your attention
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="prototype-banner">
+      ⚡ This is an interactive prototype — click on team members to see their full profile
+    </div>
+
+    <!-- WEEKLY CHECK-IN BANNER -->
+    <div id="checkin-banner" style="background:var(--navy-mid);border:1px solid var(--teal-border);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <div style="width:36px;height:36px;background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">✨</div>
+        <div>
+          <div style="font-size:0.85rem;font-weight:500;color:var(--white);margin-bottom:0.15rem;">Weekly check-in — how is your team feeling?</div>
+          <div style="font-size:0.75rem;color:var(--white-dim);">3 of 5 team members have responded this week. 2 pending.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:0.4rem;background:var(--green-dim);border:1px solid rgba(16,185,129,0.25);border-radius:100px;padding:0.3rem 0.75rem;font-size:0.75rem;color:var(--green);">
+          <div style="width:22px;height:22px;border-radius:50%;background:#1A3D2B;color:#4ECB81;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">MK</div>
+          Energised
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;background:var(--amber-dim);border:1px solid rgba(245,158,11,0.25);border-radius:100px;padding:0.3rem 0.75rem;font-size:0.75rem;color:var(--amber);">
+          <div style="width:22px;height:22px;border-radius:50%;background:#1E3A5F;color:#5AABFF;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">SV</div>
+          Stretched
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;background:var(--red-dim);border:1px solid rgba(240,82,82,0.25);border-radius:100px;padding:0.3rem 0.75rem;font-size:0.75rem;color:var(--red);">
+          <div style="width:22px;height:22px;border-radius:50%;background:#3D1A1A;color:#F87171;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">AL</div>
+          Stuck
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;background:var(--white-faint);border:1px solid var(--border);border-radius:100px;padding:0.3rem 0.75rem;font-size:0.75rem;color:var(--white-dim);">
+          <div style="width:22px;height:22px;border-radius:50%;background:#2A1A3D;color:#A78BFA;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">JP</div>
+          Pending...
+        </div>
+        <div style="display:flex;align-items:center;gap:0.4rem;background:var(--white-faint);border:1px solid var(--border);border-radius:100px;padding:0.3rem 0.75rem;font-size:0.75rem;color:var(--white-dim);">
+          <div style="width:22px;height:22px;border-radius:50%;background:#1A3A3D;color:#2DD4BF;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">EH</div>
+          Pending...
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR INTEGRATION BANNER (OPTIONAL) -->
+    <div id="calendar-banner" style="background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:0.875rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <div style="width:36px;height:36px;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">📅</div>
+        <div>
+          <div style="font-size:0.85rem;font-weight:500;color:var(--white);margin-bottom:0.15rem;">
+            Connect your team's calendars for smarter tips
+            <span style="font-size:0.68rem;background:var(--blue-dim);color:#5AABFF;border:1px solid rgba(59,130,246,0.25);padding:0.1rem 0.45rem;border-radius:100px;margin-left:0.4rem;font-weight:500;">Optional</span>
+          </div>
+          <div style="font-size:0.75rem;color:var(--white-dim);">CX3 reads meeting load only — never email or message content. Each person connects individually and can disconnect anytime.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-shrink:0;">
+        <button onclick="connectCalendar()" style="background:var(--blue-dim);border:1px solid rgba(59,130,246,0.3);color:#5AABFF;padding:0.45rem 1rem;border-radius:6px;font-size:0.78rem;font-family:var(--font-body);cursor:pointer;transition:all 0.2s;font-weight:500;" onmouseover="this.style.background='rgba(59,130,246,0.2)'" onmouseout="this.style.background='var(--blue-dim)'">Connect Google</button>
+        <button onclick="connectCalendar()" style="background:transparent;border:1px solid var(--border);color:var(--white-dim);padding:0.45rem 1rem;border-radius:6px;font-size:0.78rem;font-family:var(--font-body);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.borderColor='var(--border)'">Connect Outlook</button>
+        <button onclick="dismissCalendar()" style="background:transparent;border:none;color:var(--white-faint);padding:0.45rem 0.5rem;font-size:1rem;cursor:pointer;line-height:1;">×</button>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'overview')">Overview</button>
+      <button class="tab" onclick="switchTab(this,'team')">Team profiles</button>
+      <button class="tab" onclick="switchTab(this,'translator')">💬 Comm translator</button>
+      <button class="tab" onclick="switchTab(this,'ai')">AI coach</button>
+    </div>
+
+    <!-- TAB: COMMUNICATION TRANSLATOR -->
+    <div id="tab-translator" style="display:none">
+
+      <div style="background:var(--navy-mid);border:1px solid var(--teal-border);border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;">
+        <div style="font-family:var(--font-display);font-size:0.95rem;font-weight:700;color:var(--teal);margin-bottom:0.35rem;">💬 Communication translator</div>
+        <div style="font-size:0.82rem;color:var(--white-dim);line-height:1.6;">Type a message you want to send to a team member. The AI rewrites it in the exact format that will land best for that person's biological profile — their thinking style and top sensory channels.</div>
+      </div>
+
+      <!-- PERSON SELECTOR -->
+      <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
+        <div style="font-size:0.75rem;font-weight:600;color:var(--white-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;">Who are you writing to?</div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;" id="person-selector">
+          <button onclick="selectPerson(this,'sarah')" class="person-btn" style="display:flex;align-items:center;gap:0.5rem;background:var(--navy-light);border:1px solid var(--border);border-radius:100px;padding:0.4rem 0.875rem;color:var(--white-dim);font-size:0.78rem;font-family:var(--font-body);cursor:pointer;transition:all 0.2s;">
+            <div style="width:22px;height:22px;border-radius:50%;background:#1E3A5F;color:#5AABFF;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">SV</div> Sarah
+          </button>
+          <button onclick="selectPerson(this,'marcus')" class="person-btn" style="display:flex;align-items:center;gap:0.5rem;background:var(--navy-light);border:1px solid var(--border);border-radius:100px;padding:0.4rem 0.875rem;color:var(--white-dim);font-size:0.78rem;font-family:var(--font-body);cursor:pointer;transition:all 0.2s;">
+            <div style="width:22px;height:22px;border-radius:50%;background:#1A3D2B;color:#4ECB81;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">MK</div> Marcus
+          </button>
+          <button onclick="selectPerson(this,'anna')" class="person-btn" style="display:flex;align-items:center;gap:0.5rem;background:var(--navy-light);border:1px solid var(--border);border-radius:100px;padding:0.4rem 0.875rem;color:var(--white-dim);font-size:0.78rem;font-family:var(--font-body);cursor:pointer;transition:all 0.2s;">
+            <div style="width:22px;height:22px;border-radius:50%;background:#3D1A1A;color:#F87171;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">AL</div> Anna
+          </button>
+          <button onclick="selectPerson(this,'jaakko')" class="person-btn" style="display:flex;align-items:center;gap:0.5rem;background:var(--navy-light);border:1px solid var(--border);border-radius:100px;padding:0.4rem 0.875rem;color:var(--white-dim);font-size:0.78rem;font-family:var(--font-body);cursor:pointer;transition:all 0.2s;">
+            <div style="width:22px;height:22px;border-radius:50%;background:#2A1A3D;color:#A78BFA;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">JP</div> Jaakko
+          </button>
+          <button onclick="selectPerson(this,'elena')" class="person-btn" style="display:flex;align-items:center;gap:0.5rem;background:var(--navy-light);border:1px solid var(--border);border-radius:100px;padding:0.4rem 0.875rem;color:var(--white-dim);font-size:0.78rem;font-family:var(--font-body);cursor:pointer;transition:all 0.2s;">
+            <div style="width:22px;height:22px;border-radius:50%;background:#1A3A3D;color:#2DD4BF;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">EH</div> Elena
+          </button>
+        </div>
+      </div>
+
+      <!-- PROFILE REMINDER -->
+      <div id="profile-reminder" style="display:none;background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;font-size:0.78rem;color:var(--white-dim);line-height:1.6;"></div>
+
+      <!-- MESSAGE INPUT -->
+      <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1rem;">
+        <div style="font-size:0.75rem;font-weight:600;color:var(--white-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;">Your message — as you would normally write it</div>
+        <textarea id="translator-input" style="width:100%;background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:0.875rem;color:var(--white);font-family:var(--font-body);font-size:0.85rem;line-height:1.6;resize:vertical;min-height:100px;outline:none;transition:border-color 0.2s;" placeholder="e.g. We need to improve Q3 numbers. Please focus on the pipeline this week and report daily..." onfocus="this.style.borderColor='var(--teal-border)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+        <button onclick="translateMessage()" id="translate-btn" style="margin-top:0.75rem;background:var(--teal);color:var(--black);border:none;padding:0.75rem 1.5rem;border-radius:8px;font-family:var(--font-display);font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;opacity:0.5;" disabled>Translate for this person →</button>
+      </div>
+
+      <!-- TRANSLATED OUTPUT -->
+      <div id="translation-output" style="display:none;"></div>
+
+    </div>
+
+    <!-- TAB: OVERVIEW -->
+    <div id="tab-overview">
+
+      <!-- ALERTS -->
+      <div id="alerts-section" class="section-header" style="margin-top:0">
+        <div class="section-title">⚠️ Alerts — action needed</div>
+      </div>
+      <div class="alerts-grid" style="margin-bottom:2rem;">
+
+        <div class="alert-card red" onclick="showMember(2)">
+          <div class="alert-icon red">🔴</div>
+          <div class="alert-content">
+            <div class="alert-title">⚠️ Inner motivation critically low — Anna L. — burnout risk</div>
+            <div class="alert-body">Anna's inner motivation score is at 28% and she is showing motivational fatigue signals — things that used to energise her now feel heavy. This is a current state, not a biological trait. Her biological profile is strong — the issue is a mismatch between her biological needs (autonomy, creative ownership, movement) and her current tightly-managed environment. Without intervention the risk of losing her is high.</div>
+            <div class="alert-person">Senior Account Executive · Inner motivation tracked for 3 weeks · Biological profile: strong</div>
+          </div>
+          <div class="alert-action">View profile →</div>
+        </div>
+
+        <div class="alert-card amber" onclick="showMember(0)">
+          <div class="alert-icon amber">⚡</div>
+          <div class="alert-content">
+            <div class="alert-title">Biological channel mismatch — Sarah V.</div>
+            <div class="alert-body">Sarah's strongest biological channels are auditory-speaking (processes by talking out loud with others) and kinesthetic-doing. She is currently receiving most information in written emails and documents — her weakest channels. This is a direct biological mismatch causing daily energy drain and reducing her inner motivation. Fix is simple: replace written briefings with verbal calls.</div>
+            <div class="alert-person">Head of Sales · Biological channels: auditory-speaking, kinesthetic · Current channel: written — mismatch</div>
+          </div>
+          <div class="alert-action">View profile →</div>
+        </div>
+
+        <div class="alert-card teal" onclick="showMember(3)">
+          <div class="alert-icon teal">💡</div>
+          <div class="alert-content">
+            <div class="alert-title">Opportunity: Jaakko is underutilised</div>
+            <div class="alert-body">Jaakko's profile shows very high detail-processing strength and systematic persistence — exactly what the Q3 pipeline tracking project needs. He has been on reactive tasks for 6 weeks. Assigning him a structured analytical project will re-energise him significantly.</div>
+            <div class="alert-person">Account Executive · Profile updated 2 weeks ago</div>
+          </div>
+          <div class="alert-action">View profile →</div>
+        </div>
+
+      </div>
+
+      <!-- TEAM CARDS -->
+      <div class="section-header">
+        <div class="section-title">👥 Team profiles</div>
+      </div>
+      <div class="team-grid" style="margin-bottom:1.5rem;">
+
+        <div class="member-card status-amber" id="card-0" onclick="showMember(0)">
+          <div class="card-avatar" style="background:#1E3A5F;color:#5AABFF;">SV</div>
+          <div class="card-name">Sarah V.</div>
+          <div class="card-role">Head of Sales</div>
+          <div class="card-dims">
+            <div class="dim-row">
+              <div class="dim-label">Thinking</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:88%;background:#5AABFF"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Channels</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:90%;background:#4ECB81"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Motivation</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:55%;background:var(--amber)"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Energy</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:80%;background:#A78BFA"></div></div>
+            </div>
+          </div>
+          <div class="card-status amber">⚡ Working against strengths</div>
+        </div>
+
+        <div class="member-card status-green" id="card-1" onclick="showMember(1)">
+          <div class="card-avatar" style="background:#1A3D2B;color:#4ECB81;">MK</div>
+          <div class="card-name">Marcus K.</div>
+          <div class="card-role">Sales Manager</div>
+          <div class="card-dims">
+            <div class="dim-row">
+              <div class="dim-label">Thinking</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:45%;background:#5AABFF"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Channels</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:70%;background:#4ECB81"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Motivation</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:85%;background:var(--green)"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Energy</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:65%;background:#A78BFA"></div></div>
+            </div>
+          </div>
+          <div class="card-status green">✓ Performing well</div>
+        </div>
+
+        <div class="member-card status-red" id="card-2" onclick="showMember(2)">
+          <div class="card-avatar" style="background:#3D1A1A;color:#F87171;">AL</div>
+          <div class="card-name">Anna L.</div>
+          <div class="card-role">Senior AE</div>
+          <div class="card-dims">
+            <div class="dim-row">
+              <div class="dim-label">Thinking</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:82%;background:#5AABFF"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Channels</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:75%;background:#4ECB81"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Motivation</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:28%;background:var(--red)"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Energy</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:60%;background:#A78BFA"></div></div>
+            </div>
+          </div>
+          <div class="card-status red">🔴 Urgent attention needed</div>
+        </div>
+
+        <div class="member-card status-green" id="card-3" onclick="showMember(3)">
+          <div class="card-avatar" style="background:#2A1A3D;color:#A78BFA;">JP</div>
+          <div class="card-name">Jaakko P.</div>
+          <div class="card-role">Account Exec</div>
+          <div class="card-dims">
+            <div class="dim-row">
+              <div class="dim-label">Thinking</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:22%;background:#5AABFF"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Channels</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:80%;background:#4ECB81"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Motivation</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:78%;background:var(--green)"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Energy</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:55%;background:#A78BFA"></div></div>
+            </div>
+          </div>
+          <div class="card-status green">💡 Underutilised — opportunity</div>
+        </div>
+
+        <div class="member-card status-green" id="card-4" onclick="showMember(4)">
+          <div class="card-avatar" style="background:#1A3A3D;color:#2DD4BF;">EH</div>
+          <div class="card-name">Elena H.</div>
+          <div class="card-role">SDR Lead</div>
+          <div class="card-dims">
+            <div class="dim-row">
+              <div class="dim-label">Thinking</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:75%;background:#5AABFF"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Channels</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:85%;background:#4ECB81"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Motivation</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:90%;background:var(--green)"></div></div>
+            </div>
+            <div class="dim-row">
+              <div class="dim-label">Energy</div>
+              <div class="dim-bar"><div class="dim-fill" style="width:70%;background:#A78BFA"></div></div>
+            </div>
+          </div>
+          <div class="card-status green">✓ In flow — performing strongly</div>
+        </div>
+
+      </div>
+
+      <!-- DETAIL PANEL -->
+      <div class="detail-panel" id="detail-panel">
+        <div class="detail-header">
+          <div class="detail-avatar" id="d-avatar"></div>
+          <div>
+            <div class="detail-name" id="d-name"></div>
+            <div class="detail-role" id="d-role"></div>
+            <div class="detail-headline" id="d-headline"></div>
+          </div>
+        </div>
+        <div class="detail-body">
+          <div class="detail-col">
+            <div class="detail-col-title">Performance profile</div>
+            <div class="profile-rows" id="d-profile"></div>
+            <div id="d-conflict"></div>
+          </div>
+          <div class="detail-col">
+            <div class="detail-col-title">Tips for you as their manager</div>
+            <div class="tip-cards" id="d-tips"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: TEAM PROFILES -->
+    <div id="tab-team" style="display:none">
+
+      <!-- TEAM HEALTH SUMMARY -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;">
+        <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;">
+          <div style="font-size:0.7rem;color:var(--white-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Team alignment</div>
+          <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--amber);">71%</div>
+          <div style="font-size:0.72rem;color:var(--white-dim);margin-top:0.2rem;">2 people misaligned with role</div>
+        </div>
+        <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;">
+          <div style="font-size:0.7rem;color:var(--white-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Avg motivation</div>
+          <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--amber);">67%</div>
+          <div style="font-size:0.72rem;color:var(--white-dim);margin-top:0.2rem;">↓ from 74% last month</div>
+        </div>
+        <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;">
+          <div style="font-size:0.7rem;color:var(--white-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Active conflicts</div>
+          <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--red);">2</div>
+          <div style="font-size:0.72rem;color:var(--white-dim);margin-top:0.2rem;">Anna critical · Sarah moderate</div>
+        </div>
+        <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;">
+          <div style="font-size:0.7rem;color:var(--white-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Performing well</div>
+          <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:700;color:var(--green);">3 / 5</div>
+          <div style="font-size:0.72rem;color:var(--white-dim);margin-top:0.2rem;">Marcus, Jaakko, Elena in flow</div>
+        </div>
+      </div>
+
+      <!-- FULL PROFILE CARDS - one per person -->
+      <div style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--white-dim);margin-bottom:1rem;">Individual profiles — click any section to expand</div>
+
+      <!-- SARAH -->
+      <div class="full-profile-card" id="fp-0" style="background:var(--navy-mid);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:12px;margin-bottom:0.75rem;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;cursor:pointer;" onclick="toggleProfile('fp-0')">
+          <div style="width:40px;height:40px;border-radius:50%;background:#1E3A5F;color:#5AABFF;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:0.85rem;flex-shrink:0;">SV</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+              <span style="font-family:var(--font-display);font-size:0.95rem;font-weight:600;color:var(--white);">Sarah V.</span>
+              <span style="font-size:0.72rem;color:var(--white-dim);">Head of Sales</span>
+              <span style="font-size:0.68rem;background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,0.25);padding:0.15rem 0.55rem;border-radius:100px;">⚡ Working against strengths</span>
+              <span style="font-size:0.68rem;background:var(--white-faint);color:var(--white-dim);border:1px solid var(--border);padding:0.15rem 0.55rem;border-radius:100px;">This week: Stretched</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);margin-top:0.2rem;">Strategic big-picture leader · Auditory & kinesthetic · Morning peak · Inner motivation</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--amber);">55%</div>
+              <div style="font-size:0.62rem;color:var(--white-dim);">Motivation</div>
+            </div>
+            <div style="font-size:1rem;color:var(--white-dim);margin-left:0.5rem;">▾</div>
+          </div>
+        </div>
+        <div class="fp-detail" id="fp-0-detail" style="display:none;border-top:1px solid var(--border);padding:1.25rem;display:none;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;">🧬 Biological strengths</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);">
+                <div>🧠 <strong style="color:var(--white);">Big-picture first</strong> — needs the why before the how</div>
+                <div>👂 <strong style="color:var(--white);">Auditory</strong> — processes by hearing and speaking</div>
+                <div>🤸 <strong style="color:var(--white);">Kinesthetic</strong> — learns by doing</div>
+                <div>⏰ <strong style="color:var(--white);">Morning peak</strong> — best thinking before noon</div>
+                <div>🔊 <strong style="color:var(--white);">Needs background noise</strong> — silence kills focus</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);margin-bottom:0.75rem;">⚡ Current state</div>
+              <div style="background:var(--amber-dim);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:0.75rem;font-size:0.78rem;color:rgba(245,158,11,0.9);line-height:1.6;margin-bottom:0.75rem;">
+                Motivation dropping (55%). She is receiving information in the wrong format — long emails instead of verbal briefings. Energy drain is building.
+              </div>
+              <div style="font-size:0.72rem;color:var(--white-dim);">Weekly word: <strong style="color:var(--amber);">Stretched</strong></div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--white-dim);margin-bottom:0.75rem;">📋 Your action this week</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Replace email report with 10-min Monday call</div>
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Start all conversations with strategic goal — not tasks</div>
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Give her a project to own end-to-end</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MARCUS -->
+      <div class="full-profile-card" id="fp-1" style="background:var(--navy-mid);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:12px;margin-bottom:0.75rem;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;cursor:pointer;" onclick="toggleProfile('fp-1')">
+          <div style="width:40px;height:40px;border-radius:50%;background:#1A3D2B;color:#4ECB81;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:0.85rem;flex-shrink:0;">MK</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+              <span style="font-family:var(--font-display);font-size:0.95rem;font-weight:600;color:var(--white);">Marcus K.</span>
+              <span style="font-size:0.72rem;color:var(--white-dim);">Sales Manager</span>
+              <span style="font-size:0.68rem;background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,0.25);padding:0.15rem 0.55rem;border-radius:100px;">✓ Performing well</span>
+              <span style="font-size:0.68rem;background:var(--white-faint);color:var(--white-dim);border:1px solid var(--border);padding:0.15rem 0.55rem;border-radius:100px;">This week: Energised</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);margin-top:0.2rem;">Detail-sequential thinker · Reading & visual · Structured environment · Goal-driven</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--green);">85%</div>
+              <div style="font-size:0.62rem;color:var(--white-dim);">Motivation</div>
+            </div>
+            <div style="font-size:1rem;color:var(--white-dim);margin-left:0.5rem;">▾</div>
+          </div>
+        </div>
+        <div class="fp-detail" id="fp-1-detail" style="display:none;border-top:1px solid var(--border);padding:1.25rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;">🧬 Biological strengths</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);">
+                <div>📋 <strong style="color:var(--white);">Detail-sequential</strong> — processes step by step</div>
+                <div>📖 <strong style="color:var(--white);">Reading & visual</strong> — documents and data work well</div>
+                <div>🎯 <strong style="color:var(--white);">High precision</strong> — reliable and thorough</div>
+                <div>🔇 <strong style="color:var(--white);">Needs quiet</strong> — structured calm environment</div>
+                <div>✅ <strong style="color:var(--white);">High persistence</strong> — finishes what he starts</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:0.75rem;">✓ Current state</div>
+              <div style="background:var(--green-dim);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:0.75rem;font-size:0.78rem;color:rgba(16,185,129,0.9);line-height:1.6;margin-bottom:0.75rem;">
+                Well aligned with current role. High motivation, clear goals, working in his natural strengths. No conflicts detected.
+              </div>
+              <div style="font-size:0.72rem;color:var(--white-dim);">Weekly word: <strong style="color:var(--green);">Energised</strong></div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--white-dim);margin-bottom:0.75rem;">📋 Your action this week</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Always send written agenda before meetings</div>
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Recognise his results explicitly this week</div>
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Keep him on precision and systematic tasks</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANNA -->
+      <div class="full-profile-card" id="fp-2" style="background:var(--navy-mid);border:1px solid var(--red);border-left:3px solid var(--red);border-radius:12px;margin-bottom:0.75rem;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;cursor:pointer;" onclick="toggleProfile('fp-2')">
+          <div style="width:40px;height:40px;border-radius:50%;background:#3D1A1A;color:#F87171;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:0.85rem;flex-shrink:0;">AL</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+              <span style="font-family:var(--font-display);font-size:0.95rem;font-weight:600;color:var(--white);">Anna L.</span>
+              <span style="font-size:0.72rem;color:var(--white-dim);">Senior Account Executive</span>
+              <span style="font-size:0.68rem;background:var(--red-dim);color:var(--red);border:1px solid rgba(240,82,82,0.3);padding:0.15rem 0.55rem;border-radius:100px;">🔴 Urgent attention needed</span>
+              <span style="font-size:0.68rem;background:var(--white-faint);color:var(--white-dim);border:1px solid var(--border);padding:0.15rem 0.55rem;border-radius:100px;">This week: Stuck</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);margin-top:0.2rem;">Big-picture creative · High autonomy need · Kinesthetic · Inner motivation — currently misaligned</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--red);">28%</div>
+              <div style="font-size:0.62rem;color:var(--white-dim);">Motivation</div>
+            </div>
+            <div style="font-size:1rem;color:var(--white-dim);margin-left:0.5rem;">▾</div>
+          </div>
+        </div>
+        <div class="fp-detail" id="fp-2-detail" style="display:none;border-top:1px solid rgba(240,82,82,0.2);padding:1.25rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;">🧬 Biological strengths</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);">
+                <div>🎯 <strong style="color:var(--white);">Creative big-picture</strong> — vision and strategy</div>
+                <div>🤸 <strong style="color:var(--white);">Kinesthetic</strong> — learns and creates by doing</div>
+                <div>🔑 <strong style="color:var(--white);">Autonomy-driven</strong> — performs best with ownership</div>
+                <div>💡 <strong style="color:var(--white);">Inner motivation</strong> — needs meaning not just money</div>
+                <div>👥 <strong style="color:var(--white);">Peer-collaborative</strong> — thrives with creative partners</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--red);margin-bottom:0.75rem;">🔴 Critical conflict</div>
+              <div style="background:var(--red-dim);border:1px solid rgba(240,82,82,0.2);border-radius:8px;padding:0.75rem;font-size:0.78rem;color:rgba(240,82,82,0.9);line-height:1.6;margin-bottom:0.75rem;">
+                Biological need for autonomy vs. tightly controlled process role. Motivation at 28% for 3 consecutive weeks. Risk of resignation within 2–3 months if not addressed.
+              </div>
+              <div style="font-size:0.72rem;color:var(--white-dim);">Weekly word: <strong style="color:var(--red);">Stuck</strong></div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--red);margin-bottom:0.75rem;">🚨 Urgent actions</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                <div style="background:var(--red-dim);border:1px solid rgba(240,82,82,0.2);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:rgba(240,82,82,0.85);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;">!</span>Have a real 1:1 before Friday — ask what has changed</div>
+                <div style="background:var(--red-dim);border:1px solid rgba(240,82,82,0.2);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:rgba(240,82,82,0.85);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;">!</span>Give her one project with full ownership, no check-ins</div>
+                <div style="background:var(--red-dim);border:1px solid rgba(240,82,82,0.2);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:rgba(240,82,82,0.85);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;">!</span>Connect her work to the bigger mission — not KPIs</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JAAKKO -->
+      <div class="full-profile-card" id="fp-3" style="background:var(--navy-mid);border:1px solid var(--border);border-left:3px solid var(--teal);border-radius:12px;margin-bottom:0.75rem;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;cursor:pointer;" onclick="toggleProfile('fp-3')">
+          <div style="width:40px;height:40px;border-radius:50%;background:#2A1A3D;color:#A78BFA;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:0.85rem;flex-shrink:0;">JP</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+              <span style="font-family:var(--font-display);font-size:0.95rem;font-weight:600;color:var(--white);">Jaakko P.</span>
+              <span style="font-size:0.72rem;color:var(--white-dim);">Account Executive</span>
+              <span style="font-size:0.68rem;background:var(--teal-dim);color:var(--teal);border:1px solid var(--teal-border);padding:0.15rem 0.55rem;border-radius:100px;">💡 Underutilised — opportunity</span>
+              <span style="font-size:0.68rem;background:var(--white-faint);color:var(--white-dim);border:1px solid var(--border);padding:0.15rem 0.55rem;border-radius:100px;">Pending check-in</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);margin-top:0.2rem;">Detail-sequential analyst · Reading & visual · Quiet environment · Systematic finisher</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--green);">78%</div>
+              <div style="font-size:0.62rem;color:var(--white-dim);">Motivation</div>
+            </div>
+            <div style="font-size:1rem;color:var(--white-dim);margin-left:0.5rem;">▾</div>
+          </div>
+        </div>
+        <div class="fp-detail" id="fp-3-detail" style="display:none;border-top:1px solid var(--border);padding:1.25rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;">🧬 Biological strengths</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);">
+                <div>🔬 <strong style="color:var(--white);">Deep analyst</strong> — processes data thoroughly</div>
+                <div>📖 <strong style="color:var(--white);">Reading & writing</strong> — complex documents are easy</div>
+                <div>🎯 <strong style="color:var(--white);">Systematic</strong> — high follow-through on commitments</div>
+                <div>🔇 <strong style="color:var(--white);">Needs quiet</strong> — deep work requires no interruptions</div>
+                <div>⏳ <strong style="color:var(--white);">Needs prep time</strong> — processes before responding</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;">💡 Current state</div>
+              <div style="background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:8px;padding:0.75rem;font-size:0.78rem;color:rgba(0,212,170,0.85);line-height:1.6;margin-bottom:0.75rem;">
+                Good motivation but slightly under-stimulated. On reactive tasks for 6 weeks. His analytical strength is currently wasted — he is ready for a more complex project.
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--white-dim);margin-bottom:0.75rem;">📋 Your action this week</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Assign Q3 pipeline tracking project to him</div>
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Send meeting docs 24h in advance always</div>
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Protect his morning deep-work blocks</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ELENA -->
+      <div class="full-profile-card" id="fp-4" style="background:var(--navy-mid);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:12px;margin-bottom:0.75rem;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;cursor:pointer;" onclick="toggleProfile('fp-4')">
+          <div style="width:40px;height:40px;border-radius:50%;background:#1A3A3D;color:#2DD4BF;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:0.85rem;flex-shrink:0;">EH</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+              <span style="font-family:var(--font-display);font-size:0.95rem;font-weight:600;color:var(--white);">Elena H.</span>
+              <span style="font-size:0.72rem;color:var(--white-dim);">SDR Lead</span>
+              <span style="font-size:0.68rem;background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,0.25);padding:0.15rem 0.55rem;border-radius:100px;">✓ In flow — performing strongly</span>
+              <span style="font-size:0.68rem;background:var(--white-faint);color:var(--white-dim);border:1px solid var(--border);padding:0.15rem 0.55rem;border-radius:100px;">Pending check-in</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);margin-top:0.2rem;">Flexible thinker · Auditory & kinesthetic · High energy · Strong social · Very high motivation</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <div style="text-align:center;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--green);">90%</div>
+              <div style="font-size:0.62rem;color:var(--white-dim);">Motivation</div>
+            </div>
+            <div style="font-size:1rem;color:var(--white-dim);margin-left:0.5rem;">▾</div>
+          </div>
+        </div>
+        <div class="fp-detail" id="fp-4-detail" style="display:none;border-top:1px solid var(--border);padding:1.25rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;">🧬 Biological strengths</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);">
+                <div>🔄 <strong style="color:var(--white);">Flexible thinker</strong> — adapts to both styles</div>
+                <div>👂 <strong style="color:var(--white);">Auditory</strong> — calls and conversations work best</div>
+                <div>⚡ <strong style="color:var(--white);">High energy</strong> — needs variety and movement</div>
+                <div>👥 <strong style="color:var(--white);">Social energiser</strong> — people give her energy</div>
+                <div>🌟 <strong style="color:var(--white);">Team culture carrier</strong> — natural positive influence</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:0.75rem;">✓ Current state</div>
+              <div style="background:var(--green-dim);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:0.75rem;font-size:0.78rem;color:rgba(16,185,129,0.9);line-height:1.6;margin-bottom:0.75rem;">
+                Highest motivation on the team (90%). Fully aligned with role. In flow state. Protect this — don't overload her with admin.
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--white-dim);margin-bottom:0.75rem;">📋 Your action this week</div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Protect her from admin overload — she's in flow</div>
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Give her visibility in team meetings — culture carrier</div>
+                <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.6rem 0.75rem;font-size:0.75rem;color:var(--white-dim);padding-left:1.5rem;position:relative;"><span style="position:absolute;left:0.5rem;color:var(--teal);">→</span>Introduce new challenge before she plateaus</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: AI COACH -->
+    <div id="tab-ai" style="display:none">
+
+      <!-- WEEKLY NUDGE -->
+      <div style="background:linear-gradient(135deg,var(--navy-light),var(--navy-mid));border:1px solid var(--teal-border);border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),rgba(0,212,170,0.2));"></div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:40px;height:40px;background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">⚡</div>
+            <div>
+              <div style="font-family:var(--font-display);font-size:0.95rem;font-weight:700;color:var(--teal);margin-bottom:0.1rem;">This week's leadership nudge</div>
+              <div style="font-size:0.72rem;color:var(--white-dim);">Generated Monday · Based on your team's current profiles and check-ins</div>
+            </div>
+          </div>
+          <div style="font-size:0.68rem;background:var(--teal-dim);color:var(--teal);border:1px solid var(--teal-border);padding:0.2rem 0.6rem;border-radius:100px;white-space:nowrap;">Week 18 · 2026</div>
+        </div>
+        <div style="font-size:0.9rem;color:var(--white);line-height:1.7;margin-bottom:1.25rem;">
+          <strong style="color:var(--teal);">Your focus this week:</strong> Anna has said "Stuck" for the second week in a row. Based on her biological profile — high autonomy need, inner motivation, kinesthetic learner — the fastest way to reset her is not a pep talk. It is giving her something real to own. This week, give her one project with zero check-ins. Tell her the outcome you need by Friday — nothing else. Let her find her own way there. Then notice what happens.
+        </div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <button onclick="markNudgeDone(this)" style="background:var(--teal);color:var(--black);border:none;padding:0.5rem 1.25rem;border-radius:7px;font-size:0.8rem;font-weight:600;font-family:var(--font-body);cursor:pointer;transition:opacity 0.2s;">✓ I did this</button>
+          <button onclick="markNudgeSkip(this)" style="background:transparent;color:var(--white-dim);border:1px solid var(--border);padding:0.5rem 1.25rem;border-radius:7px;font-size:0.8rem;font-family:var(--font-body);cursor:pointer;">Not this week</button>
+          <button onclick="switchToChat()" style="background:transparent;color:var(--teal);border:1px solid var(--teal-border);padding:0.5rem 1.25rem;border-radius:7px;font-size:0.8rem;font-family:var(--font-body);cursor:pointer;">Ask AI for help with this →</button>
+        </div>
+      </div>
+
+      <!-- USER MANUAL CARDS -->
+      <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:36px;height:36px;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;">📋</div>
+            <div>
+              <div style="font-family:var(--font-display);font-size:0.875rem;font-weight:600;color:var(--white);">Team user manual cards</div>
+              <div style="font-size:0.72rem;color:var(--white-dim);">Each person's shareable profile card — designed to be shown to manager and key colleagues</div>
+            </div>
+          </div>
+          <div style="font-size:0.72rem;color:var(--white-dim);">5 cards generated</div>
+        </div>
+        <div style="padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+          <!-- SARAH CARD -->
+          <div style="background:var(--navy-light);border:1px solid var(--border);border-radius:10px;padding:1rem;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);"></div>
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#1E3A5F;color:#5AABFF;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;">SV</div>
+              <div>
+                <div style="font-size:0.82rem;font-weight:600;color:var(--white);">Sarah V.</div>
+                <div style="font-size:0.68rem;color:var(--white-dim);">Head of Sales</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.72rem;">
+              <div style="color:var(--white-dim);">🧠 <strong style="color:var(--white);">Give me:</strong> Big picture first, then details</div>
+              <div style="color:var(--white-dim);">👂 <strong style="color:var(--white);">Talk to me:</strong> Verbally — not long emails</div>
+              <div style="color:var(--white-dim);">⏰ <strong style="color:var(--white);">Best time:</strong> Morning before noon</div>
+              <div style="color:var(--white-dim);">🔋 <strong style="color:var(--white);">Drains me:</strong> Micromanagement, too many details</div>
+              <div style="color:var(--white-dim);">⚡ <strong style="color:var(--white);">I need:</strong> Autonomy and ownership</div>
+            </div>
+            <button onclick="shareCard(this,'Sarah')" style="margin-top:0.75rem;width:100%;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.25);color:#5AABFF;padding:0.35rem;border-radius:6px;font-size:0.7rem;font-family:var(--font-body);cursor:pointer;">Share this card →</button>
+          </div>
+          <!-- ANNA CARD -->
+          <div style="background:var(--navy-light);border:1px solid rgba(240,82,82,0.2);border-radius:10px;padding:1rem;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--red);"></div>
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#3D1A1A;color:#F87171;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;">AL</div>
+              <div>
+                <div style="font-size:0.82rem;font-weight:600;color:var(--white);">Anna L.</div>
+                <div style="font-size:0.68rem;color:var(--white-dim);">Senior AE</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.72rem;">
+              <div style="color:var(--white-dim);">🧠 <strong style="color:var(--white);">Give me:</strong> Purpose and meaning behind tasks</div>
+              <div style="color:var(--white-dim);">🤸 <strong style="color:var(--white);">I learn by:</strong> Doing — let me try it</div>
+              <div style="color:var(--white-dim);">🔑 <strong style="color:var(--white);">I need:</strong> Full ownership — no micromanaging</div>
+              <div style="color:var(--white-dim);">🔋 <strong style="color:var(--white);">Drains me:</strong> Rigid processes, no autonomy</div>
+              <div style="color:var(--white-dim);">⚠️ <strong style="color:var(--red);">Now:</strong> Inner motivation low — needs attention</div>
+            </div>
+            <button onclick="shareCard(this,'Anna')" style="margin-top:0.75rem;width:100%;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.25);color:#5AABFF;padding:0.35rem;border-radius:6px;font-size:0.7rem;font-family:var(--font-body);cursor:pointer;">Share this card →</button>
+          </div>
+          <!-- JAAKKO CARD -->
+          <div style="background:var(--navy-light);border:1px solid var(--border);border-radius:10px;padding:1rem;position:relative;overflow:hidden;">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--purple);"></div>
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#2A1A3D;color:#A78BFA;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;">JP</div>
+              <div>
+                <div style="font-size:0.82rem;font-weight:600;color:var(--white);">Jaakko P.</div>
+                <div style="font-size:0.68rem;color:var(--white-dim);">Account Exec</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.72rem;">
+              <div style="color:var(--white-dim);">🧠 <strong style="color:var(--white);">Give me:</strong> Data and documents in advance</div>
+              <div style="color:var(--white-dim);">📖 <strong style="color:var(--white);">I learn by:</strong> Reading and analysing deeply</div>
+              <div style="color:var(--white-dim);">⏰ <strong style="color:var(--white);">Best time:</strong> Morning deep work — protect it</div>
+              <div style="color:var(--white-dim);">🔋 <strong style="color:var(--white);">Drains me:</strong> Surprises, no prep time</div>
+              <div style="color:var(--white-dim);">⚡ <strong style="color:var(--white);">I need:</strong> Quiet, structured, no interruptions</div>
+            </div>
+            <button onclick="shareCard(this,'Jaakko')" style="margin-top:0.75rem;width:100%;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.25);color:#5AABFF;padding:0.35rem;border-radius:6px;font-size:0.7rem;font-family:var(--font-body);cursor:pointer;">Share this card →</button>
+          </div>
+          <!-- MARCUS + ELENA CARDS -->
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <div style="background:var(--navy-light);border:1px solid var(--border);border-radius:10px;padding:0.875rem;position:relative;overflow:hidden;flex:1;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);"></div>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+                <div style="width:24px;height:24px;border-radius:50%;background:#1A3D2B;color:#4ECB81;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">MK</div>
+                <span style="font-size:0.78rem;font-weight:600;color:var(--white);">Marcus K.</span>
+                <span style="font-size:0.65rem;color:var(--white-dim);">Sales Manager</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--white-dim);line-height:1.6;">📖 Learns by reading · 🔇 Needs quiet · ✅ Systematic finisher · 📝 Written recognition lands deepest</div>
+              <button onclick="shareCard(this,'Marcus')" style="margin-top:0.5rem;width:100%;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.25);color:#5AABFF;padding:0.3rem;border-radius:6px;font-size:0.68rem;font-family:var(--font-body);cursor:pointer;">Share →</button>
+            </div>
+            <div style="background:var(--navy-light);border:1px solid var(--border);border-radius:10px;padding:0.875rem;position:relative;overflow:hidden;flex:1;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);"></div>
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+                <div style="width:24px;height:24px;border-radius:50%;background:#1A3A3D;color:#2DD4BF;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;">EH</div>
+                <span style="font-size:0.78rem;font-weight:600;color:var(--white);">Elena H.</span>
+                <span style="font-size:0.65rem;color:var(--white-dim);">SDR Lead</span>
+              </div>
+              <div style="font-size:0.7rem;color:var(--white-dim);line-height:1.6;">👥 Energised by people · 🗣️ Learns by discussing · ⚡ High inner drive · 🌟 Natural team energiser</div>
+              <button onclick="shareCard(this,'Elena')" style="margin-top:0.5rem;width:100%;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.25);color:#5AABFF;padding:0.3rem;border-radius:6px;font-size:0.68rem;font-family:var(--font-body);cursor:pointer;">Share →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INDIVIDUAL COACHING TASKS -->
+      <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:36px;height:36px;background:var(--purple-dim);border:1px solid rgba(139,92,246,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;">🎯</div>
+            <div>
+              <div style="font-family:var(--font-display);font-size:0.875rem;font-weight:600;color:var(--white);">Individual coaching tasks</div>
+              <div style="font-size:0.72rem;color:var(--white-dim);">Based on biological strengths — activating what each person does naturally · 3 active</div>
+            </div>
+          </div>
+          <div style="font-size:0.72rem;color:var(--white-dim);">2 / 5 completed</div>
+        </div>
+
+        <!-- SARAH TASK — auditory-speaking strength activation -->
+        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#1E3A5F;color:#5AABFF;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">SV</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap;">
+              <span style="font-size:0.82rem;font-weight:500;color:var(--white);">Sarah — Morning voice memo ritual</span>
+              <span style="font-size:0.65rem;background:var(--amber-dim);color:var(--amber);padding:0.1rem 0.45rem;border-radius:100px;">In progress</span>
+              <span style="font-size:0.65rem;color:var(--white-faint);">Strength: Auditory-speaking · 31 days</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.55;margin-bottom:0.5rem;">Every morning before opening email, record a 2-minute voice memo of your 3 priorities for the day. Speaking activates Sarah's strongest biological channel. This strengthens what is already natural — not fixing a weakness.</div>
+            <div style="background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:6px;padding:0.5rem 0.75rem;font-size:0.72rem;color:rgba(0,212,170,0.85);">Also: Replace her Monday written report with a 10-minute verbal call. Activates the same channel — information will land significantly better.</div>
+          </div>
+          <button onclick="completeTask(this)" style="background:transparent;border:1px solid var(--border);color:var(--white-dim);padding:0.35rem 0.75rem;border-radius:6px;font-size:0.72rem;font-family:var(--font-body);cursor:pointer;white-space:nowrap;flex-shrink:0;">Mark done</button>
+        </div>
+
+        <!-- ANNA TASK — mission map + sensory load reduction -->
+        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#3D1A1A;color:#F87171;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">AL</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap;">
+              <span style="font-size:0.82rem;font-weight:500;color:var(--white);">Anna — Mission and meaning map</span>
+              <span style="font-size:0.65rem;background:var(--red-dim);color:var(--red);padding:0.1rem 0.45rem;border-radius:100px;">Urgent · Not started</span>
+              <span style="font-size:0.65rem;color:var(--white-faint);">Low inner motivation signal · One-time</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.55;margin-bottom:0.5rem;">Ask Anna to draw or write a map covering: what originally excited her about this role, what was good about it, what created real passion, what has changed, and what might have led to the current situation. This exercise matches her kinesthetic-doing and visual-internal profile — she processes by drawing and doing, not by talking or reading. Bring it to your 1:1 and ask her to walk you through it. Do not analyse. Just listen.</div>
+            <div style="background:var(--red-dim);border:1px solid rgba(240,82,82,0.2);border-radius:6px;padding:0.5rem 0.75rem;font-size:0.72rem;color:rgba(240,82,82,0.85);">Role alert: Anna is a Senior AE — her autonomy need is a strength for client relationships. The task should reconnect her inner drive, not manage her closer.</div>
+          </div>
+          <button onclick="completeTask(this)" style="background:transparent;border:1px solid rgba(240,82,82,0.3);color:var(--red);padding:0.35rem 0.75rem;border-radius:6px;font-size:0.72rem;font-family:var(--font-body);cursor:pointer;white-space:nowrap;flex-shrink:0;">Mark done</button>
+        </div>
+
+        <!-- JAAKKO TASK — deep work + ABC prioritisation -->
+        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#2A1A3D;color:#A78BFA;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">JP</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap;">
+              <span style="font-size:0.82rem;font-weight:500;color:var(--white);">Jaakko — Deep work blocks + ABC prioritisation</span>
+              <span style="font-size:0.65rem;background:var(--green-dim);color:var(--green);padding:0.1rem 0.45rem;border-radius:100px;">✓ Deep work completed</span>
+              <span style="font-size:0.65rem;color:var(--amber);padding:0.1rem 0.45rem;border-radius:100px;background:var(--amber-dim);">ABC in progress</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.55;margin-bottom:0.5rem;">Deep work blocks are working — 40% output improvement reported. Now adding ABC prioritisation: ask Jaakko to write on paper (tactile strength) a list of all current tasks categorised as A (critical, must move), B (important but not urgent, possible to delegate), C (must do but timing flexible). This makes his workload visible and uses his analytical reading-writing strength.</div>
+            <div style="background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:6px;padding:0.5rem 0.75rem;font-size:0.72rem;color:rgba(0,212,170,0.85);">Important: doing this on paper by hand activates his tactile channel and helps him process the full picture — not on a screen.</div>
+          </div>
+          <button onclick="completeTask(this)" style="background:transparent;border:1px solid var(--border);color:var(--white-dim);padding:0.35rem 0.75rem;border-radius:6px;font-size:0.72rem;font-family:var(--font-body);cursor:pointer;white-space:nowrap;flex-shrink:0;">Mark done</button>
+        </div>
+
+        <!-- MARCUS TASK — sensory load reduction -->
+        <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#1A3D2B;color:#4ECB81;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">MK</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap;">
+              <span style="font-size:0.82rem;font-weight:500;color:var(--white);">Marcus — Sensory load reduction in meetings</span>
+              <span style="font-size:0.65rem;background:var(--white-faint);color:var(--white-dim);padding:0.1rem 0.45rem;border-radius:100px;">Active this week</span>
+              <span style="font-size:0.65rem;color:var(--white-faint);">Weakest channel: visual-external · 21 days</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.55;margin-bottom:0.5rem;">Marcus's weakest sensory channel is visual-external — looking at things. In meetings where he needs to concentrate and get results, he should consciously reduce this channel. Practical experiment: when pre-read materials have already been reviewed, close the slides in meetings and focus fully on listening. This removes the weakest channel and amplifies the strongest.</div>
+            <div style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.75rem;font-size:0.72rem;color:var(--white-dim);">Note: this is about reducing a weak channel in demanding situations — not about fixing a weakness. His reading channel is strong. It is the passive looking/watching that costs him.</div>
+          </div>
+          <button onclick="completeTask(this)" style="background:transparent;border:1px solid var(--border);color:var(--white-dim);padding:0.35rem 0.75rem;border-radius:6px;font-size:0.72rem;font-family:var(--font-body);cursor:pointer;white-space:nowrap;flex-shrink:0;">Mark done</button>
+        </div>
+
+        <!-- ELENA TASK — standing experiment + peer mentoring -->
+        <div style="padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:1rem;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#1A3A3D;color:#2DD4BF;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">EH</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;flex-wrap:wrap;">
+              <span style="font-size:0.82rem;font-weight:500;color:var(--white);">Elena — Standing experiment + peer mentoring</span>
+              <span style="font-size:0.65rem;background:var(--green-dim);color:var(--green);padding:0.1rem 0.45rem;border-radius:100px;">✓ Mentoring completed</span>
+              <span style="font-size:0.65rem;background:var(--amber-dim);color:var(--amber);padding:0.1rem 0.45rem;border-radius:100px;">Standing: active</span>
+            </div>
+            <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.55;margin-bottom:0.5rem;">Peer mentoring completed with great results. Now running the standing experiment: target approximately 1 hour of standing during afternoon when energy naturally dips. Elena has high kinesthetic-movement need — standing activates her biology and maintains the high inner drive she currently has. This is about protecting her flow state, not fixing a problem.</div>
+            <div style="font-size:0.75rem;color:var(--green);margin-top:0.35rem;">✓ Mentoring result: new SDR onboarding time reduced by 30%</div>
+          </div>
+          <div style="color:var(--green);font-size:1.1rem;flex-shrink:0;">✓</div>
+        </div>
+      </div>
+
+      <!-- MONTHLY REPORT PREVIEW -->
+      <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="width:36px;height:36px;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;">📊</div>
+            <div>
+              <div style="font-family:var(--font-display);font-size:0.875rem;font-weight:600;color:var(--white);">Monthly team health report — April 2026</div>
+              <div style="font-size:0.72rem;color:var(--white-dim);">Auto-generated · Shareable with your manager or HR</div>
+            </div>
+          </div>
+          <button style="background:var(--blue-dim);border:1px solid rgba(59,130,246,0.3);color:#5AABFF;padding:0.4rem 1rem;border-radius:6px;font-size:0.75rem;font-family:var(--font-body);cursor:pointer;">Download PDF</button>
+        </div>
+        <div style="padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div>
+            <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--white-dim);margin-bottom:0.75rem;">What improved this month</div>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+              <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);"><span style="color:var(--green);margin-top:0.1rem;">↑</span> Team alignment score improved from 64% to 71%</div>
+              <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);"><span style="color:var(--green);margin-top:0.1rem;">↑</span> Jaakko's output quality up significantly after deep work blocks</div>
+              <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);"><span style="color:var(--green);margin-top:0.1rem;">↑</span> Elena onboarded new SDR 30% faster using her natural strengths</div>
+              <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);"><span style="color:var(--green);margin-top:0.1rem;">↑</span> Marcus check-in consistently Energised for 4 weeks</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--white-dim);margin-bottom:0.75rem;">Focus for next month</div>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+              <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);"><span style="color:var(--red);margin-top:0.1rem;">!</span> Anna's motivation still critical — mission conversation this week</div>
+              <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);"><span style="color:var(--amber);margin-top:0.1rem;">→</span> Fix Sarah's information format — switch briefings to verbal</div>
+              <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);"><span style="color:var(--amber);margin-top:0.1rem;">→</span> Assign Jaakko a complex Q3 project to maintain momentum</div>
+              <div style="display:flex;align-items:flex-start;gap:0.5rem;font-size:0.78rem;color:var(--white-dim);"><span style="color:var(--teal);margin-top:0.1rem;">+</span> Consider adding new team member — capacity gap detected</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin:0 1.25rem 1.25rem;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:0.875rem 1rem;font-size:0.78rem;color:var(--white-dim);line-height:1.6;">
+          <strong style="color:var(--white);">AI summary:</strong> Your team made real progress this month. The coaching tasks that were completed had measurable impact — this confirms the approach works. The main risk going into May is Anna. If her situation is not resolved in the next 2 weeks, the probability of losing her rises significantly. Everything else is stable or improving.
+        </div>
+      </div>
+
+      <!-- AI CHAT -->
+      <div class="ai-box" id="ai-chat-section">
+        <div class="ai-header">
+          <div class="ai-icon">🤖</div>
+          <div>
+            <div class="ai-title">Ask your AI coach</div>
+            <div class="ai-sub">I know every profile, every check-in, every task — ask me anything</div>
+          </div>
+        </div>
+        <div class="ai-messages" id="ai-messages">
+          <div class="ai-message" data-emoji="💡">
+            <strong>Good morning.</strong> This week's check-in is in: Marcus is <strong>Energised</strong>, Sarah is <strong>Stretched</strong>, and Anna says <strong>Stuck</strong>. Anna's "Stuck" for the second week combined with her critically low motivation pulse is urgent. Sarah being "Stretched" confirms the channel mismatch — switch her briefings to verbal immediately. I've prepared individual coaching tasks for all 5 people above — 2 are already completed with great results.
+          </div>
+          <div class="ai-message" data-emoji="📊">
+            <strong>This month:</strong> Your team alignment improved from 64% → 71%. The coaching tasks that were completed had real measurable impact. The mission mapping exercise for Anna is the most important thing on your list right now — it directly addresses the root cause, not just the symptom.
+          </div>
+        </div>
+        <div class="ai-input-row">
+          <input class="ai-input" id="ai-input" placeholder="e.g. 'Give me a task for Sarah based on her strengths' or 'How do I start the Anna conversation?'" onkeydown="if(event.key==='Enter')sendAI()">
+          <button class="ai-send" onclick="sendAI()">Ask →</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<script>
+const members = [
+  {
+    id: 0, initials: "SV", name: "Sarah V.", role: "Head of Sales",
+    avatarBg: "#1E3A5F", avatarColor: "#5AABFF",
+    headline: "Strategic big-picture leader — sensory channels currently mismatched",
+    profile: [
+      { badge: "b1", label: "Thinking style", text: "Strong big-picture thinker. Needs the overall goal and reason before she can commit to any task. Details frustrate and drain her energy." },
+      { badge: "b2", label: "Top sensory channels", text: "Auditory-speaking (processes by talking out loud with others) and kinesthetic-doing (learns by doing). Written documents and emails are her weakest channel — information is not landing." },
+      { badge: "b3", label: "Physical needs", text: "Needs background noise and movement to concentrate. Morning is her biological peak — before noon is when her best thinking happens." },
+      { badge: "b4", label: "Social style", text: "Works best in pairs or small groups. High autonomy need — does not need micromanagement and performs significantly worse under it." },
+      { badge: "b5", label: "Current inner motivation", text: "Inner drive is present but currently depleted. She is working against her natural channels daily — this is a learned state, not biological. The mismatch is draining her inner engine." },
+    ],
+    conflict: "⚠️ <strong>Channel mismatch:</strong> Sarah's strongest biological channels are auditory-speaking and kinesthetic — but she currently receives most information in written emails and documents. This is a direct biological mismatch causing daily energy drain. Her inner motivation is dropping as a result. Switch her briefings to verbal conversations or short calls immediately.",
+    tips: [
+      "Replace her weekly written status report with a 10-minute Monday morning call. She processes auditorily — speaking and hearing, not reading.",
+      "Always start conversations with the strategic goal — never with task lists or details. She needs the why before she can engage with the what.",
+      "Give her a project to own end-to-end with full autonomy. When her biological strengths are used her inner motivation will recover naturally."
+    ]
+  },
+  {
+    id: 1, initials: "MK", name: "Marcus K.", role: "Sales Manager",
+    avatarBg: "#1A3D2B", avatarColor: "#4ECB81",
+    headline: "Detail-oriented sequential executor — well aligned right now",
+    profile: [
+      { badge: "b1", label: "Thinking style", text: "Sequential, detail-focused thinker. Processes step-by-step with high precision. Excellent at execution, follow-through and systematic work." },
+      { badge: "b2", label: "Top sensory channels", text: "Reading-writing (absorbs written information deeply) and visual-external (diagrams and structured documents). Verbal briefings alone are not enough — he needs it in writing too." },
+      { badge: "b3", label: "Physical needs", text: "Prefers quiet, structured environment. Performs well in morning and early afternoon. Can concentrate for long periods without needing to move." },
+      { badge: "b4", label: "Social style", text: "Works well both solo and in small structured groups. Comfortable with authority and clear direction." },
+      { badge: "b6", label: "Current inner motivation", text: "Strong inner drive currently active. He holds himself to his own high standards. His check-in word is Energised — he is in a good performance state." },
+    ],
+    conflict: null,
+    tips: [
+      "Always give Marcus written instructions with specific timelines — verbal alone is not enough for him. He needs to read it to own it.",
+      "Recognise his results explicitly and specifically — not generic praise but specific acknowledgement of what he achieved.",
+      "Leverage his precision for tasks requiring accuracy, documentation and systematic follow-through. That is his biological zone of genius."
+    ]
+  },
+  {
+    id: 2, initials: "AL", name: "Anna L.", role: "Senior Account Executive",
+    avatarBg: "#3D1A1A", avatarColor: "#F87171",
+    headline: "High-potential performer — inner motivation critically low, burnout risk",
+    profile: [
+      { badge: "b1", label: "Thinking style", text: "Strong big-picture creative thinker with high strategic capacity. Needs to understand the purpose behind her work to perform at her best." },
+      { badge: "b2", label: "Top sensory channels", text: "Kinesthetic-doing (learns and creates by doing, not by reading) and visual-internal (thinks in images, imaginative). Long written briefs and process documents are genuinely ineffective for her." },
+      { badge: "b3", label: "Physical needs", text: "Needs movement and informality. A rigid, process-heavy formal environment drains her biological energy significantly." },
+      { badge: "b4", label: "Social style", text: "Needs peer collaboration and autonomy. Works best with creative partners or alone with full ownership. Over-managed or isolated situations drain her fast." },
+      { badge: "b5", label: "Current inner motivation", text: "⚠️ Inner drive is critically low (28%) and showing signs of motivational fatigue — things that used to energise her now feel like effort. This is a current state, not biological. Something structural has changed. Urgent attention needed." },
+    ],
+    conflict: "🔴 <strong>Urgent — burnout risk detected:</strong> Anna's biological profile shows very high need for autonomy, creative ownership and movement — but her current role has her in a tightly managed process environment. Her inner motivation score is critically low and her check-in says 'Stuck' for the second week. This is not an attitude problem — it is a biological mismatch that is depleting her inner drive. Without intervention the risk of losing her is high within 2–3 months.",
+    tips: [
+      "Have a real conversation this week — not a performance review. Ask: 'What originally excited you about this role — and what has changed?' Then listen without fixing.",
+      "Give her one project with complete end-to-end ownership. No check-ins unless she asks. Tell her the outcome you need, then step back entirely.",
+      "Connect her daily work to something meaningful beyond the KPI. Her inner drive is fuelled by purpose — without it the engine runs empty."
+    ]
+  },
+  {
+    id: 3, initials: "JP", name: "Jaakko P.", role: "Account Executive",
+    avatarBg: "#2A1A3D", avatarColor: "#A78BFA",
+    headline: "Systematic precision thinker — strong inner drive, currently underutilised",
+    profile: [
+      { badge: "b1", label: "Thinking style", text: "Strong detail-sequential thinker. Processes methodically and thoroughly. Rarely makes errors when given time to think and prepare." },
+      { badge: "b2", label: "Top sensory channels", text: "Reading-writing (absorbs complex information through documents and data) and visual-external (charts, graphs and structured layouts). Needs preparation time before meetings to process." },
+      { badge: "b3", label: "Physical needs", text: "Needs quiet and structured environment. Works best alone or in very small groups for analytical tasks. Morning deep-work blocks are essential." },
+      { badge: "b4", label: "Social style", text: "Prefers working alone or in pairs on focused tasks. Does not need frequent check-ins — trusts himself to deliver and finds over-supervision frustrating." },
+      { badge: "b6", label: "Current inner motivation", text: "Good inner drive — he holds himself to his own high standards naturally. However slightly under-stimulated currently. His analytical strength is being wasted on reactive tasks for 6 weeks." },
+    ],
+    conflict: null,
+    tips: [
+      "Send him meeting materials and data at least 24 hours in advance — he needs processing time. Surprising him produces his worst thinking.",
+      "Assign him the Q3 pipeline tracking and forecasting project. His biological analytical strength is currently underused — this will re-energise him.",
+      "Protect his morning deep-work blocks from meetings. That is when his precision thinking is at its peak."
+    ]
+  },
+  {
+    id: 4, initials: "EH", name: "Elena H.", role: "SDR Lead",
+    avatarBg: "#1A3A3D", avatarColor: "#2DD4BF",
+    headline: "High-energy communicator — strong inner drive, fully in flow",
+    profile: [
+      { badge: "b1", label: "Thinking style", text: "Flexible thinker — can work with both big-picture and detail depending on context. Adapts well to different situations and people." },
+      { badge: "b2", label: "Top sensory channels", text: "Auditory-speaking (processes and learns through talking with others) and kinesthetic-doing (learns by doing and experiencing). Quick calls and active tasks work far better than written memos." },
+      { badge: "b3", label: "Physical needs", text: "Comfortable with noise and activity. High energy — needs variety and movement throughout the day to stay sharp." },
+      { badge: "b4", label: "Social style", text: "Strong social preference — energised by people and collaborative environments. Teams and open spaces are where she performs best." },
+      { badge: "b6", label: "Current inner motivation", text: "Very high inner drive currently active (90%). Fully aligned with role, using her biological strengths daily. She drives herself forward from within — in a genuine flow state." },
+    ],
+    conflict: null,
+    tips: [
+      "Protect her energy state — she is in flow right now. Avoid overloading her with admin tasks that don't use her natural strengths.",
+      "Use her as a culture carrier and team energiser — her enthusiasm is genuine and contagious. Give her visibility in team settings.",
+      "Keep introducing new challenges before she plateaus. Her high inner motivation is partly sustained by novelty — routine would slowly erode it."
+    ]
+  }
+];
+let activeCard = null;
+
+function showMember(idx) {
+  const m = members[idx];
+
+  document.querySelectorAll('.member-card').forEach((c,i) => {
+    c.classList.toggle('active', i === idx);
+  });
+
+  document.getElementById('d-avatar').textContent = m.initials;
+  document.getElementById('d-avatar').style.background = m.avatarBg;
+  document.getElementById('d-avatar').style.color = m.avatarColor;
+  document.getElementById('d-name').textContent = m.name;
+  document.getElementById('d-role').textContent = m.role;
+  document.getElementById('d-headline').textContent = m.headline;
+
+  const profileEl = document.getElementById('d-profile');
+  profileEl.innerHTML = m.profile.map(p => `
+    <div class="profile-row">
+      <span class="profile-badge ${p.badge}">${p.label}</span>
+      <span class="profile-text">${p.text}</span>
+    </div>
+  `).join('');
+
+  const conflictEl = document.getElementById('d-conflict');
+  if (m.conflict) {
+    conflictEl.innerHTML = `<div class="conflict-box">${m.conflict}</div>`;
+  } else {
+    conflictEl.innerHTML = `<div style="margin-top:1rem;background:var(--green-dim);border:1px solid rgba(16,185,129,0.25);border-radius:8px;padding:0.875rem 1rem;font-size:0.8rem;color:rgba(16,185,129,0.9);line-height:1.55;">
+      ✓ <strong style="color:var(--green)">No conflicts detected.</strong> This person is well-aligned with their current role and environment.
+    </div>`;
+  }
+
+  document.getElementById('d-tips').innerHTML = m.tips.map(t => `<div class="tip-card">${t}</div>`).join('');
+
+  const panel = document.getElementById('detail-panel');
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  activeCard = idx;
+}
+
+function switchTab(btn, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-overview').style.display = tab === 'overview' ? 'block' : 'none';
+  document.getElementById('tab-team').style.display = tab === 'team' ? 'block' : 'none';
+  document.getElementById('tab-translator').style.display = tab === 'translator' ? 'block' : 'none';
+  document.getElementById('tab-ai').style.display = tab === 'ai' ? 'block' : 'none';
+}
+
+let selectedPerson = null;
+
+const personProfiles = {
+  sarah: {
+    name: 'Sarah V.', role: 'Head of Sales',
+    thinking: 'right', // big picture
+    topChannels: ['Auditory-speaking', 'Kinesthetic-doing'],
+    weakChannels: ['Reading/writing'],
+    autonomy: 'high',
+    color: '#5AABFF', bg: '#1E3A5F',
+    guide: {
+      dos: ['Start with the big picture and strategic purpose — always', 'Keep it short and verbal — call instead of email when possible', 'Ask open questions: "What do you think would work best here?"', 'Give her the outcome and let her decide how to get there', 'Connect to mission and meaning'],
+      donts: ['Never lead with details or data before context', 'Avoid long written reports or email chains', 'Do not micromanage the process — only the outcome', 'Do not bury the point in background information']
+    }
+  },
+  marcus: {
+    name: 'Marcus K.', role: 'Sales Manager',
+    thinking: 'left', // sequential
+    topChannels: ['Reading/writing', 'Visual-external'],
+    weakChannels: ['Kinesthetic-doing'],
+    autonomy: 'medium',
+    color: '#4ECB81', bg: '#1A3D2B',
+    guide: {
+      dos: ['Give clear steps, timelines and written instructions', 'Send information in writing — he reads and retains well', 'Be specific and factual — give him the details', 'Provide written confirmation of decisions and next steps', 'Use lists, charts and structured formats'],
+      donts: ['Do not give vague open-ended requests', 'Avoid verbal-only briefings without written follow-up', 'Do not expect him to figure out the process himself', 'Avoid sudden changes without written explanation']
+    }
+  },
+  anna: {
+    name: 'Anna L.', role: 'Senior Account Executive',
+    thinking: 'right', // big picture
+    topChannels: ['Kinesthetic-doing', 'Visual-internal'],
+    weakChannels: ['Reading/writing'],
+    autonomy: 'high',
+    color: '#F87171', bg: '#3D1A1A',
+    guide: {
+      dos: ['Lead with purpose and meaning — the why matters most', 'Give her full ownership — state the outcome, not the process', 'Ask imaginative questions: "How would you approach this?"', 'Short and direct — she loses interest in long messages', 'Draw or visualise the situation if possible'],
+      donts: ['Never lead with KPIs or numbers without context', 'Avoid detailed process instructions — she finds her own way', 'Do not check in too frequently — she needs space', 'Avoid long formal written messages']
+    }
+  },
+  jaakko: {
+    name: 'Jaakko P.', role: 'Account Executive',
+    thinking: 'left', // sequential
+    topChannels: ['Reading/writing', 'Visual-external'],
+    weakChannels: ['Auditory-speaking'],
+    autonomy: 'medium',
+    color: '#A78BFA', bg: '#2A1A3D',
+    guide: {
+      dos: ['Send written materials in advance — always', 'Include data, details and structured analysis', 'Give him time to process before expecting a response', 'Use charts, graphs and written summaries', 'Be precise and factual — he thinks analytically'],
+      donts: ['Never put him on the spot in meetings without prep time', 'Avoid vague requests without clear deliverables', 'Do not expect quick verbal reactions — he needs thinking time', 'Avoid too many simultaneous requests']
+    }
+  },
+  elena: {
+    name: 'Elena H.', role: 'SDR Lead',
+    thinking: 'flexible',
+    topChannels: ['Auditory-speaking', 'Kinesthetic-doing'],
+    weakChannels: ['Visual-internal'],
+    autonomy: 'medium',
+    color: '#2DD4BF', bg: '#1A3A3D',
+    guide: {
+      dos: ['Quick verbal calls work better than long emails', 'Give her variety and new challenges to stay engaged', 'Direct and energetic tone — she matches your energy', 'She adapts well — both structured and open approaches work', 'Involve her in team conversations — she thrives socially'],
+      donts: ['Avoid long passive written communication', 'Do not isolate her from team interaction', 'Avoid monotonous routine without fresh challenges']
+    }
+  }
+};
+
+function selectPerson(btn, personId) {
+  selectedPerson = personId;
+  document.querySelectorAll('.person-btn').forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.color = 'var(--white-dim)';
+    b.style.background = 'var(--navy-light)';
+  });
+  btn.style.borderColor = 'var(--teal-border)';
+  btn.style.color = 'var(--teal)';
+  btn.style.background = 'var(--teal-dim)';
+
+  const p = personProfiles[personId];
+  const reminder = document.getElementById('profile-reminder');
+  reminder.style.display = 'block';
+  reminder.innerHTML = `<strong style="color:var(--white);">${p.name} · ${p.role}</strong> — 
+    ${p.thinking === 'right' ? '🧠 Big-picture right-brain' : p.thinking === 'left' ? '🧠 Sequential left-brain' : '🧠 Flexible thinker'} · 
+    Top channels: <strong style="color:var(--teal);">${p.topChannels.join(', ')}</strong> · 
+    Weakest: <span style="color:#F87171;">${p.weakChannels.join(', ')}</span>`;
+
+  document.getElementById('translate-btn').disabled = false;
+  document.getElementById('translate-btn').style.opacity = '1';
+}
+
+function translateMessage() {
+  const input = document.getElementById('translator-input').value.trim();
+  if (!input || !selectedPerson) return;
+
+  const p = personProfiles[selectedPerson];
+  const btn = document.getElementById('translate-btn');
+  btn.textContent = 'Translating...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    const output = document.getElementById('translation-output');
+
+    // Generate translation based on profile
+    let translated = '';
+    let explanation = '';
+
+    if (p.thinking === 'right') {
+      // Big picture — start with why, short, purposeful
+      if (input.toLowerCase().includes('q3') || input.toLowerCase().includes('number') || input.toLowerCase().includes('pipeline')) {
+        translated = `Hey ${p.name.split(' ')[0]} — quick one. We have a real opportunity in Q3 and I want you to own it. The pipeline is the key lever right now. What's your read on where we should focus this week to make the biggest impact? Let's find 10 minutes to talk it through.`;
+        explanation = 'Rewritten to: start with opportunity not problem, ask for her view first (right-brain), request a call not written report, give her ownership of the approach.';
+      } else {
+        translated = `Hi ${p.name.split(' ')[0]} — here's the big picture: ${input.substring(0,80)}... What's your instinct on the best way to handle this? I trust your judgment on how to get there.`;
+        explanation = 'Rewritten to: lead with context, invite her perspective, give autonomy over approach.';
+      }
+    } else if (p.thinking === 'left') {
+      // Sequential — clear steps, written, specific
+      translated = `Hi ${p.name.split(' ')[0]},\n\nHere is what I need:\n\n1. ${input.substring(0,60)}...\n2. Please send me a written update by [date]\n3. Include the specific numbers and steps taken\n\nLet me know if you have any questions before starting.`;
+      explanation = 'Rewritten to: numbered steps, written format, specific deliverable with deadline, clear structure — matches left-brain sequential processing.';
+    } else {
+      translated = `Hi ${p.name.split(' ')[0]} — ${input.substring(0,100)}... Happy to discuss on a quick call or over message — whichever works better for you.`;
+      explanation = 'Elena is flexible — kept the message clear and offered both verbal and written options.';
+    }
+
+    output.style.display = 'block';
+    output.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+        <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:12px;padding:1.25rem;">
+          <div style="font-size:0.7rem;font-weight:600;color:var(--white-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;">❌ Your original message</div>
+          <div style="font-size:0.82rem;color:var(--white-dim);line-height:1.6;font-style:italic;">"${input}"</div>
+        </div>
+        <div style="background:var(--navy-mid);border:1px solid var(--teal-border);border-radius:12px;padding:1.25rem;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);"></div>
+          <div style="font-size:0.7rem;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;">✅ Translated for ${p.name.split(' ')[0]}</div>
+          <div style="font-size:0.82rem;color:var(--white);line-height:1.6;">${translated.replace(/\n/g,'<br>')}</div>
+        </div>
+      </div>
+      <div style="background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:10px;padding:0.875rem 1rem;font-size:0.78rem;color:rgba(0,212,170,0.85);line-height:1.6;margin-bottom:1rem;">
+        <strong style="color:var(--teal);">Why this works for ${p.name.split(' ')[0]}:</strong> ${explanation}
+      </div>
+      <div style="background:var(--navy-mid);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;">
+        <div style="font-size:0.7rem;font-weight:600;color:var(--white-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;">Quick guide for ${p.name.split(' ')[0]}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:0.78rem;">
+          <div>
+            <div style="color:var(--green);font-weight:500;margin-bottom:0.4rem;">✅ Always do</div>
+            ${p.guide.dos.map(d => `<div style="color:var(--white-dim);margin-bottom:0.25rem;">• ${d}</div>`).join('')}
+          </div>
+          <div>
+            <div style="color:var(--red);font-weight:500;margin-bottom:0.4rem;">❌ Avoid</div>
+            ${p.guide.donts.map(d => `<div style="color:var(--white-dim);margin-bottom:0.25rem;">• ${d}</div>`).join('')}
+          </div>
+        </div>
+      </div>`;
+
+    btn.textContent = 'Translate for this person →';
+    btn.disabled = false;
+  }, 900);
+}
+
+function scrollToAlerts() {
+  document.getElementById('alerts-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+const aiResponses = {
+  default: [
+    "Based on this week's check-ins and team profiles, the most important thing you can do today is have a real conversation with Anna — not a performance review, but a genuine 'what has changed?' conversation. Her mission mapping task is waiting. That exercise alone could turn things around.",
+    "Your team has strong big-picture thinking but limited detail processing. Jaakko is your precision anchor — his deep work blocks are already showing results. Before adding any new analytical projects, check his capacity first.",
+    "3 out of 5 coaching tasks are completed this week with measurable results. The two that remain — Anna's mission mapping and Sarah's morning voice memo — are the most impactful ones. I recommend prioritising those before Friday.",
+    "Sarah's 'Stretched' check-in combined with her auditory-kinesthetic profile tells us she is information-overloaded. The fix is simple: replace her Monday email report with a 10-minute phone call. Her energy will change noticeably within one week.",
+  ],
+  anna: "Anna's profile + 'Stuck' for 2 weeks = a person whose biological need for autonomy and meaning is completely unmet right now. Here is the task I recommend: ask her to spend 30 minutes drawing or writing a mission map — what originally excited her, what changed, what one thing would make her feel her work matters. Bring it to your next 1:1 and ask her to walk you through it. Do not analyse it. Just listen. This matches her kinesthetic and visual strengths perfectly.",
+  task: "Here is a coaching task for Sarah based on her auditory strength: every morning before opening email, she records a 2-minute voice memo with her 3 priorities for the day. Speaking activates her strongest channel and will reduce the 'stretched' feeling significantly. Duration: 31 days. This is the kind of small daily practice that creates big changes — exactly what you did manually before, now built into the platform.",
+  feedback: "When giving feedback to Anna: connect everything to the bigger picture and her long-term goals. She responds to meaning, not metrics. Frame it as 'here is how this helps you achieve what you care about' — never 'here is what the KPI says'. Give feedback in private 1:1 settings only — she needs space to process without an audience.",
+  meeting: "For your next team meeting based on everyone's profiles: start with the strategic goal not the agenda, send Jaakko the materials 24 hours in advance, keep it under 45 minutes, and give Anna a specific topic to lead. 3 out of 5 of your team are big-picture thinkers — they engage 3x better when they understand the why before the what.",
+  report: "Your April team health report is ready above. Key takeaway: team alignment improved 7 points this month. The coaching tasks that were completed had real measurable results — Jaakko's output quality improved, Elena's mentoring reduced onboarding time by 30%. The main risk going into May is Anna. Everything else is moving in the right direction.",
+};
+
+function shareCard(btn, name) {
+  btn.textContent = '✓ Link copied!';
+  btn.style.background = 'var(--green-dim)';
+  btn.style.color = 'var(--green)';
+  btn.style.borderColor = 'rgba(16,185,129,0.3)';
+  setTimeout(() => {
+    btn.textContent = 'Share this card →';
+    btn.style.background = 'var(--blue-dim)';
+    btn.style.color = '#5AABFF';
+    btn.style.borderColor = 'rgba(59,130,246,0.25)';
+  }, 2000);
+}
+
+function toggleProfile(id) {
+  const detail = document.getElementById(id + '-detail');
+  const isOpen = detail.style.display === 'block';
+  // Close all
+  document.querySelectorAll('.fp-detail').forEach(d => d.style.display = 'none');
+  // Open this one if it was closed
+  if (!isOpen) detail.style.display = 'block';
+}
+
+function markNudgeDone(btn) {
+  btn.textContent = '✓ Done — great work!';
+  btn.style.background = 'var(--green)';
+  btn.disabled = true;
+  const msg = document.createElement('div');
+  msg.style.cssText = 'margin-top:0.75rem;font-size:0.78rem;color:var(--green);';
+  msg.textContent = '✓ Logged. The AI will follow up with you next Monday to see how Anna responded.';
+  btn.parentElement.appendChild(msg);
+}
+
+function markNudgeSkip(btn) {
+  btn.textContent = 'Skipped';
+  btn.disabled = true;
+}
+
+function switchToChat() {
+  document.getElementById('ai-chat-section').scrollIntoView({behavior:'smooth'});
+  document.getElementById('ai-input').value = 'Help me start the conversation with Anna about giving her a project to own';
+  document.getElementById('ai-input').focus();
+}
+
+function completeTask(btn) {
+  const row = btn.parentElement;
+  btn.textContent = '✓ Done';
+  btn.style.color = 'var(--green)';
+  btn.style.borderColor = 'rgba(16,185,129,0.3)';
+  btn.disabled = true;
+  const taskText = row.querySelector('.fp-detail, div:last-of-type');
+  const note = document.createElement('div');
+  note.style.cssText = 'font-size:0.72rem;color:var(--green);margin-top:0.35rem;';
+  note.textContent = '✓ Marked complete — AI will check in next week for results';
+  row.children[1].appendChild(note);
+}
+
+function connectCalendar() {
+  const banner = document.getElementById('calendar-banner');
+  banner.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;width:100%;">
+      <div style="width:36px;height:36px;background:var(--green-dim);border:1px solid rgba(16,185,129,0.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">✅</div>
+      <div style="flex:1;">
+        <div style="font-size:0.85rem;font-weight:500;color:var(--green);margin-bottom:0.15rem;">Calendar connected — meeting load now visible</div>
+        <div style="font-size:0.75rem;color:var(--white-dim);">CX3 can now see when your team's peak hours are blocked. AI tips will update within the hour. Each person can disconnect anytime from their own settings.</div>
+      </div>
+      <div style="font-size:0.75rem;color:var(--white-dim);background:var(--green-dim);border:1px solid rgba(16,185,129,0.2);padding:0.3rem 0.75rem;border-radius:100px;">Reading meeting load only</div>
+    </div>`;
+
+  // Add calendar alert to alerts
+  const alertsGrid = document.querySelector('.alerts-grid');
+  const calAlert = document.createElement('div');
+  calAlert.className = 'alert-card amber';
+  calAlert.style.cursor = 'default';
+  calAlert.innerHTML = `
+    <div class="alert-icon amber">📅</div>
+    <div class="alert-content">
+      <div class="alert-title">Calendar insight — Sarah's peak time is fully blocked</div>
+      <div class="alert-body">Sarah's biological peak focus time is 9–11am. Her calendar shows back-to-back meetings every Tuesday and Wednesday morning for the next 3 weeks. She is consistently doing her hardest thinking at her lowest energy point. Consider protecting at least one morning per week.</div>
+      <div class="alert-person">Detected via calendar integration · Head of Sales</div>
+    </div>
+    <div class="alert-action">New insight</div>`;
+  alertsGrid.appendChild(calAlert);
+}
+
+function dismissCalendar() {
+  const banner = document.getElementById('calendar-banner');
+  banner.style.display = 'none';
+}
+
+function sendAI() {
+  const input = document.getElementById('ai-input');
+  const val = input.value.trim().toLowerCase();
+  if (!val) return;
+
+  const aiResponses = {
+    default: [
+      "Based on this week's check-ins and profiles, the most important thing right now is Anna. Her inner motivation is critically low and she is showing fatigue signals — things that used to energise her now feel heavy. This is a current state, not a personality issue. Something structural has changed and needs a real conversation, not a performance review.",
+      "Key distinction to remember: the biological profile shows HOW someone works best — sensory channels, thinking style, physical needs. This never changes. The inner motivation score shows HOW THEY ARE DOING RIGHT NOW — this changes with situation. Anna's biology is strong. Her current inner drive is depleted. Two separate problems, two separate solutions.",
+      "Sarah's biggest issue right now: her strongest biological channels are auditory-speaking and kinesthetic — but she receives most information in writing. Every email you send her is working against her biology. Switch her Monday briefing to a 10-minute call and watch her engagement change within a week.",
+      "Jaakko's inner drive is good but he is under-stimulated. His analytical strength needs complex systematic work. Six weeks on reactive tasks is too long for his profile. Assign him the Q3 pipeline project — he will re-energise noticeably.",
+    ],
+    anna: "Anna's biological profile shows a person built for creative ownership — kinesthetic-doing, big-picture thinking, high autonomy need. Her inner motivation is critically low and she is showing fatigue signals. These are two separate things: her biological wiring has not changed, but her current inner drive is depleted. The conversation to have is not about performance — it is about what has changed and what one thing would reconnect her inner engine. Do not analyse. Just listen.",
+    task: "Coaching task for Sarah based on her auditory-speaking channel: replace her Monday written report with a 10-minute phone call where she talks through priorities out loud. Speaking is her biological processing channel — not a preference. Within 2 weeks her engagement will be noticeably higher. Individual task: every morning before email, she records a 2-minute voice memo of her 3 priorities for the day.",
+    feedback: "Feedback for Anna — connect to purpose and autonomy, not process. Her inner drive responds to meaning and ownership. Say: 'Here is why this matters — you decide how to get there.' Never: 'Here is the process to follow.' Give feedback in private 1:1 only — her kinesthetic profile means she processes emotionally and group feedback shuts her down.",
+    meeting: "For your next team meeting: start with strategic goal not agenda — 4 of 5 are big-picture thinkers. Send Jaakko data 24 hours ahead — he is a reading-writing processor who needs preparation. Keep under 45 minutes — Sarah and Elena have high movement needs. Give Anna a topic to lead — she needs ownership to re-engage her inner drive.",
+    report: "April report is ready above. Key insight: biological profile and current inner motivation are now tracked separately. Sarah's biological channels are strong but her inner motivation dropped because her environment is mismatched. Anna's biology is also strong but her inner drive is critically depleted — two different problems. Jaakko and Elena are biologically aligned and showing strong inner drive. Marcus is stable.",
+  };
+
+  const messagesEl = document.getElementById('ai-messages');
+
+  const userMsg = document.createElement('div');
+  userMsg.style.cssText = 'background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:10px;padding:0.75rem 1rem;font-size:0.82rem;color:var(--white);margin-bottom:0;text-align:right;';
+  userMsg.textContent = input.value;
+  messagesEl.appendChild(userMsg);
+
+  input.value = '';
+
+  setTimeout(() => {
+    let response;
+    if (val.includes('anna')) response = aiResponses.anna;
+    else if (val.includes('task') || val.includes('exercise') || val.includes('coaching') || val.includes('sarah')) response = aiResponses.task;
+    else if (val.includes('feedback')) response = aiResponses.feedback;
+    else if (val.includes('meeting')) response = aiResponses.meeting;
+    else if (val.includes('report') || val.includes('month')) response = aiResponses.report;
+    else response = aiResponses.default[Math.floor(Math.random() * aiResponses.default.length)];
+
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'ai-message';
+    aiMsg.setAttribute('data-emoji', '🤖');
+    aiMsg.innerHTML = response;
+    messagesEl.appendChild(aiMsg);
+    aiMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 800);
+}
+</script>
+</body>
+</html>

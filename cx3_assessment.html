@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CX3 — Performance Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#070B10;--navy:#0C1520;--navy-mid:#101C2C;--navy-light:#162238;
+  --teal:#00D4AA;--teal-dim:rgba(0,212,170,0.1);--teal-border:rgba(0,212,170,0.22);
+  --white:#EEF2F7;--white-dim:rgba(238,242,247,0.55);--white-faint:rgba(238,242,247,0.1);
+  --border:rgba(255,255,255,0.06);--red:#F05252;--amber:#F59E0B;--green:#10B981;
+  --purple:#8B5CF6;--blue:#3B82F6;
+  --font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;
+}
+body{background:var(--black);color:var(--white);font-family:var(--font-b);min-height:100vh;overflow-x:hidden;}
+
+/* WELCOME SCREEN */
+#welcome{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden;}
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%);pointer-events:none;z-index:0;}
+.bg-glow{position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(0,212,170,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0;}
+.welcome-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:20px;padding:3rem;max-width:640px;width:100%;position:relative;z-index:1;animation:fadeUp 0.6s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.logo{font-family:var(--font-d);font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:2rem;}
+.logo span{color:var(--teal);}
+.welcome-badge{display:inline-flex;align-items:center;gap:0.5rem;background:var(--teal-dim);border:1px solid var(--teal-border);border-radius:100px;padding:0.3rem 0.9rem;font-size:0.72rem;color:var(--teal);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:1.5rem;}
+.welcome-badge::before{content:'';width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+h1{font-family:var(--font-d);font-size:2.2rem;font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:1rem;}
+h1 em{font-style:normal;color:var(--teal);}
+.welcome-sub{font-size:1rem;color:var(--white-dim);line-height:1.7;margin-bottom:2rem;font-weight:300;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:2rem;}
+.info-item{background:var(--navy-light);border:1px solid var(--border);border-radius:10px;padding:0.875rem;text-align:center;}
+.info-num{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--teal);display:block;}
+.info-label{font-size:0.72rem;color:var(--white-dim);margin-top:0.2rem;}
+.name-input{width:100%;background:var(--navy-light);border:1px solid var(--border);border-radius:10px;padding:0.875rem 1.25rem;color:var(--white);font-family:var(--font-b);font-size:1rem;outline:none;transition:border-color 0.2s;margin-bottom:1rem;}
+.name-input::placeholder{color:var(--white-faint);}
+.name-input:focus{border-color:var(--teal-border);}
+.btn-start{width:100%;background:var(--teal);color:var(--black);border:none;border-radius:10px;padding:1rem;font-family:var(--font-d);font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-start:hover{background:#00EEBB;transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,212,170,0.3);}
+.privacy-note{font-size:0.75rem;color:var(--white-faint);text-align:center;margin-top:1rem;line-height:1.5;}
+
+/* ASSESSMENT SCREEN */
+#assessment{display:none;min-height:100vh;padding:0;}
+.assess-header{position:fixed;top:0;left:0;right:0;z-index:10;background:rgba(7,11,16,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.assess-logo{font-family:var(--font-d);font-size:1rem;font-weight:700;color:var(--white);}
+.assess-logo span{color:var(--teal);}
+.progress-wrap{flex:1;max-width:400px;margin:0 2rem;}
+.progress-bar{height:4px;background:var(--white-faint);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--teal);border-radius:2px;transition:width 0.4s ease;}
+.progress-text{font-size:0.72rem;color:var(--white-dim);margin-top:0.4rem;text-align:center;}
+.dim-label{font-size:0.72rem;color:var(--teal);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+
+.assess-body{padding:6rem 2rem 4rem;max-width:760px;margin:0 auto;}
+
+.dim-intro{background:var(--navy-mid);border:1px solid var(--teal-border);border-radius:16px;padding:1.75rem;margin-bottom:2rem;display:none;}
+.dim-intro.active{display:block;animation:fadeUp 0.4s ease both;}
+.dim-intro-label{font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);margin-bottom:0.5rem;}
+.dim-intro-title{font-family:var(--font-d);font-size:1.2rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
+.dim-intro-body{font-size:0.85rem;color:var(--white-dim);line-height:1.65;font-weight:300;}
+
+.question-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:1.5rem;display:none;transition:all 0.3s;}
+.question-card.active{display:block;animation:fadeUp 0.4s ease both;}
+.question-card:hover{border-color:rgba(255,255,255,0.1);}
+.q-num{font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;}
+.q-text{font-family:var(--font-d);font-size:1.05rem;font-weight:600;color:var(--white);line-height:1.4;margin-bottom:1.5rem;}
+.scale-wrap{display:flex;flex-direction:column;gap:0.75rem;}
+.scale-labels{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--white-dim);padding:0 0.25rem;margin-bottom:0.25rem;}
+.scale-btns{display:flex;gap:0.5rem;}
+.scale-btn{flex:1;height:48px;background:var(--navy-light);border:1px solid var(--border);border-radius:8px;color:var(--white-dim);font-family:var(--font-d);font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.scale-btn:hover{border-color:var(--teal-border);color:var(--white);}
+.scale-btn.selected{background:var(--teal);border-color:var(--teal);color:var(--black);}
+.q-hint{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--white-faint);margin-top:0.5rem;font-style:italic;}
+
+.nav-btns{display:flex;gap:1rem;margin-top:2rem;}
+.btn-prev{flex:1;background:transparent;border:1px solid var(--border);color:var(--white-dim);padding:0.875rem;border-radius:10px;font-family:var(--font-b);font-size:0.9rem;cursor:pointer;transition:all 0.2s;}
+.btn-prev:hover{border-color:rgba(255,255,255,0.2);color:var(--white);}
+.btn-next{flex:2;background:var(--teal);border:none;color:var(--black);padding:0.875rem;border-radius:10px;font-family:var(--font-d);font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-next:hover{background:#00EEBB;transform:translateY(-1px);}
+.btn-next:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+/* RESULTS SCREEN */
+#results{display:none;min-height:100vh;padding:4rem 2rem;}
+.results-wrap{max-width:840px;margin:0 auto;}
+.results-header{text-align:center;margin-bottom:3rem;animation:fadeUp 0.6s ease both;}
+.results-name{font-family:var(--font-d);font-size:2.5rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:0.5rem;}
+.results-name span{color:var(--teal);}
+.results-sub{font-size:1rem;color:var(--white-dim);font-weight:300;}
+.headline-box{background:linear-gradient(135deg,var(--navy-mid),var(--navy-light));border:1px solid var(--teal-border);border-radius:16px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden;animation:fadeUp 0.6s ease 0.1s both;}
+.headline-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),transparent);}
+.headline-label{font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;}
+.headline-text{font-family:var(--font-d);font-size:1.4rem;font-weight:700;color:var(--white);line-height:1.3;margin-bottom:0.75rem;}
+.headline-desc{font-size:0.9rem;color:var(--white-dim);line-height:1.7;font-weight:300;}
+
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem;}
+.result-card{background:var(--navy-mid);border:1px solid var(--border);border-radius:14px;padding:1.5rem;animation:fadeUp 0.6s ease both;}
+.result-card:nth-child(1){animation-delay:0.15s}
+.result-card:nth-child(2){animation-delay:0.2s}
+.result-card:nth-child(3){animation-delay:0.25s}
+.result-card:nth-child(4){animation-delay:0.3s}
+.result-card:nth-child(5){animation-delay:0.35s}
+.result-card:nth-child(6){animation-delay:0.4s}
+.rc-label{font-size:0.65rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:0.5rem;}
+.rc-title{font-family:var(--font-d);font-size:1rem;font-weight:700;color:var(--white);margin-bottom:0.75rem;}
+.rc-bar-wrap{margin-bottom:0.75rem;}
+.rc-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.rc-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+.rc-score{font-size:0.72rem;color:var(--white-dim);margin-top:0.3rem;display:flex;justify-content:space-between;}
+.rc-insight{font-size:0.82rem;color:var(--white-dim);line-height:1.6;font-weight:300;}
+.rc-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem;}
+.rc-tag{font-size:0.68rem;padding:0.18rem 0.55rem;border-radius:100px;font-weight:500;}
+
+.tips-section{background:var(--navy-mid);border:1px solid var(--border);border-radius:16px;padding:1.75rem;margin-bottom:2rem;animation:fadeUp 0.6s ease 0.45s both;}
+.tips-title{font-family:var(--font-d);font-size:1rem;font-weight:700;color:var(--white);margin-bottom:1.25rem;display:flex;align-items:center;gap:0.5rem;}
+.tips-list{display:flex;flex-direction:column;gap:0.65rem;}
+.tip-item{background:var(--navy-light);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem 0.75rem 2.25rem;font-size:0.83rem;color:var(--white-dim);line-height:1.55;position:relative;}
+.tip-item::before{content:'→';position:absolute;left:0.75rem;top:0.75rem;color:var(--teal);font-size:0.8rem;}
+
+.conflict-section{margin-bottom:2rem;animation:fadeUp 0.6s ease 0.5s both;}
+.conflict-box{background:rgba(240,82,82,0.08);border:1px solid rgba(240,82,82,0.25);border-radius:12px;padding:1.25rem;margin-bottom:0.75rem;}
+.conflict-title{font-size:0.85rem;font-weight:500;color:var(--red);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.5rem;}
+.conflict-body{font-size:0.8rem;color:rgba(240,82,82,0.8);line-height:1.55;}
+
+.share-section{text-align:center;padding:2rem;animation:fadeUp 0.6s ease 0.55s both;}
+.share-title{font-family:var(--font-d);font-size:1.1rem;font-weight:700;color:var(--white);margin-bottom:0.5rem;}
+.share-sub{font-size:0.85rem;color:var(--white-dim);margin-bottom:1.5rem;}
+.btn-share{background:var(--teal);color:var(--black);border:none;padding:0.875rem 2rem;border-radius:10px;font-family:var(--font-d);font-weight:700;font-size:0.9rem;cursor:pointer;transition:all 0.2s;}
+.btn-share:hover{background:#00EEBB;transform:translateY(-1px);}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- WELCOME -->
+<div id="welcome">
+  <div class="welcome-card">
+    <div class="logo">CX3HQ</div>
+    <div class="welcome-badge">Human Performance Assessment</div>
+    <h1>Discover how you <em>naturally</em> work.</h1>
+    <p class="welcome-sub">42 questions across 6 biological and learned dimensions. No right or wrong answers — just honest insight into how you think, communicate and perform at your best.</p>
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-num">43</span>
+        <div class="info-label">questions</div>
+      </div>
+      <div class="info-item">
+        <span class="info-num">15 min</span>
+        <div class="info-label">to complete</div>
+      </div>
+      <div class="info-item">
+        <span class="info-num">8</span>
+        <div class="info-label">dimensions</div>
+      </div>
+    </div>
+    <input class="name-input" id="user-name" type="text" placeholder="Your first name" maxlength="40">
+    <button class="btn-start" onclick="startAssessment()">Start my assessment →</button>
+    <p class="privacy-note">Your answers are used only to generate your personal profile. Grounded in decades of research on how people naturally think, learn and communicate.</p>
+  </div>
+</div>
+
+<!-- ASSESSMENT -->
+<div id="assessment">
+  <div class="assess-header">
+    <div class="assess-logo">CX3HQ</div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-text" id="progress-text">Question 1 of 42</div>
+    </div>
+    <div class="dim-label" id="dim-label">Thinking Style</div>
+  </div>
+  <div class="assess-body" id="assess-body"></div>
+</div>
+
+<!-- RESULTS -->
+<div id="results">
+  <div class="results-wrap" id="results-content"></div>
+</div>
+
+<script>
+const userName = () => document.getElementById('user-name').value.trim() || 'You';
+const answers = {};
+let currentQ = 0;
+
+const dimensions = [
+  { id:'thinking', label:'Dimension 1', title:'Thinking & Processing Style', color:'#5AABFF',
+    desc:'How you naturally process information and make decisions — big picture or step by step, fast or reflective.' },
+  { id:'sensory', label:'Dimension 2', title:'Sensory Channels', color:'#4ECB81',
+    desc:'The specific channels through which you best receive, process and retain information.' },
+  { id:'environment', label:'Dimension 3', title:'Physical Needs & Environment', color:'#F5A623',
+    desc:'The physical conditions under which you concentrate and perform at your best.' },
+  { id:'social', label:'Dimension 4', title:'Social Style & Authority', color:'#A78BFA',
+    desc:'How you perform best in relation to others and how you relate to authority and supervision.' },
+  { id:'motivation', label:'Dimension 5', title:'Motivation State', color:'#F87171',
+    desc:'What is currently driving you — and what might be draining you. This reflects your current state.' },
+  { id:'structure', label:'Dimension 6', title:'Structure & Adaptability', color:'#2DD4BF',
+    desc:'How you currently handle change, rules, responsibility and the need for structure.' },
+];
+
+const questions = [
+  // DIMENSION 1 — THINKING (Q1-6)
+  { dim:'thinking', num:1, text:'When starting something new, I need to understand the overall goal and purpose before I can begin working on the details.', lo:'I prefer to start with the steps', hi:'I absolutely need the why and overview first' },
+  { dim:'thinking', num:2, text:'I often read the end of a book or report first, then decide whether to read the whole thing — I need the big picture before the details.', lo:'I always read from beginning to end in order', hi:'I browse backwards and read conclusions first' },
+  { dim:'thinking', num:3, text:'I naturally work on several things at the same time rather than finishing one task completely before starting the next.', lo:'I always finish one thing before starting another', hi:'I juggle multiple things simultaneously — it feels natural' },
+  { dim:'thinking', num:4, text:'I trust my gut feeling when making decisions, often before I have analysed all the data.', lo:'I need facts and analysis before deciding anything', hi:'My instinct is almost always right — I act on it first' },
+  { dim:'thinking', num:5, text:'I get frustrated and lose focus when people give me too many details before getting to the point.', lo:'I want all the details — missing information makes me uncomfortable', hi:'Too much detail loses me completely — get to the point' },
+  { dim:'thinking', num:6, text:'I prefer to think things through slowly and consider all options carefully before responding or taking action.', lo:'I am a quick thinker — reflecting too long bores me', hi:'I always think about consequences before acting — never snap decisions' },
+
+  // DIMENSION 2 — SENSORY (Q7-16) — 10 sub-channels: Auditory 3, Visual 3, Tactile 2, Kinesthetic 2
+  // AUDITORY — kuunteleminen, keskusteleminen, itsekseen puhuminen
+  { dim:'sensory', num:7, text:'I understand and remember information much better when I hear it explained verbally by someone else — listening to others speak is one of my strongest ways of taking in new information.', lo:'I absorb very little from just listening. I need to read or see something to retain it.', hi:'I remember almost everything I hear. Listening to someone explain is by far my best channel.' },
+  { dim:'sensory', num:8, text:'I think through problems and reach decisions most effectively when I can discuss them out loud with another person — conversation is how I process and understand.', lo:'Discussing with others does not help me think. I process better alone in silence or in writing.', hi:'I need to talk things through with someone. Discussion is how I reach clarity — I think by talking.' },
+  { dim:'sensory', num:9, text:'When I am reading or working through something difficult, I have a strong inner voice running — I talk to myself mentally, hear words in my head, and process through inner dialogue.', lo:'I have no strong inner voice. I think in images or abstract patterns, not internal words.', hi:'My inner monologue is always active. I constantly talk to myself in my head when thinking or reading.' },
+  // VISUAL — katseleminen, mielikuvitus/visualisointi, lukeminen
+  { dim:'sensory', num:10, text:'I understand complex information significantly faster when I can see it as a diagram, chart, visual map or structured layout — looking at visual overviews helps me grasp things immediately.', lo:'Diagrams and charts do not particularly help me. I prefer words and text.', hi:'Show me a visual layout and I understand instantly. Diagrams and charts are essential for me.' },
+  { dim:'sensory', num:11, text:'When I read or hear something, I often see images in my mind — I picture what is described and think in mental images and imagination rather than in words.', lo:'I do not think in pictures. I process in words, logic or abstract concepts.', hi:'I think almost entirely in mental images. Visualisation and imagination is how I understand the world.' },
+  { dim:'sensory', num:12, text:'Reading written text is one of my strongest ways of taking in information — I understand and retain things well when I read them myself in documents, articles or books.', lo:'Reading is my weakest channel. I absorb very little from text alone — I need to hear or do it.', hi:'Reading is one of my best channels. Written text is how I most effectively absorb new information.' },
+  // TACTILE — käsillä koskettelu/manipulointi, muistiinpanot käsin
+  { dim:'sensory', num:13, text:'I concentrate better and remember more when I can use my hands to touch or physically handle objects, materials or tools — the physical sensation in my hands helps me focus and process.', lo:'Using my hands to touch or handle things does not particularly help me concentrate.', hi:'I need to use my hands. Touching and physically handling things helps me concentrate and retain information.' },
+  { dim:'sensory', num:14, text:'Writing things down by hand — with a pen or pencil on paper — helps me remember and process information significantly better than typing or just reading.', lo:'Writing by hand does not help me remember things better than other methods.', hi:'Handwriting is essential for me. Writing by hand with a pen on paper is how I process and retain information.' },
+  // KINESTHETIC — tekeminen/kokeminen, tunteminen/intuitio
+  { dim:'sensory', num:15, text:'I learn new skills and understand new concepts most effectively by actually doing and experiencing them myself — direct hands-on involvement works far better for me than reading or watching.', lo:'I always want to read or watch before trying. I need to understand it fully before doing it.', hi:'Just let me try it. Doing and experiencing is by far how I learn best. Manuals and instructions frustrate me.' },
+  { dim:'sensory', num:16, text:'I often get a strong inner feeling or gut sense about a situation, a person or a decision — I feel it physically inside my body before I can logically explain it, and this sense is usually right.', lo:'I rely on logic, data and analysis. I do not trust gut feelings as a reliable basis for decisions.', hi:'My intuition is almost always right. I feel things before I can explain them and I trust that physical inner sense.' },
+
+  // DIMENSION 3 — ENVIRONMENT (Q17-26)
+  { dim:'environment', num:17, text:'I concentrate significantly better and feel more productive when I work in a quiet environment with minimal background noise.', lo:'Background noise or activity does not bother me at all', hi:'I need complete silence. Any background noise destroys my concentration.' },
+  { dim:'environment', num:18, text:'I work and concentrate better when there is background noise, music or the sound of people around me — complete silence feels uncomfortable.', lo:'Background noise makes it very hard for me to concentrate.', hi:'I need background sounds. Working in complete silence feels wrong.' },
+  { dim:'environment', num:19, text:'I prefer to work in bright, well-lit environments — natural daylight or full overhead lighting helps me concentrate.', lo:'Bright light makes me tense or uncomfortable when concentrating.', hi:'I always want maximum light. I work best in bright, sunny spaces.' },
+  { dim:'environment', num:20, text:'I prefer to work in softer, dimmer lighting — harsh bright light stresses me and reduces my ability to concentrate.', lo:'Dim or soft lighting makes me feel sleepy or unfocused.', hi:'I need dim lighting. Bright fluorescent lights genuinely reduce my performance.' },
+  { dim:'environment', num:21, text:'I find it very difficult to sit still for long periods — I need to move my body, stand up or walk around to concentrate effectively.', lo:'I can sit comfortably for hours without needing to move.', hi:'Sitting still is nearly impossible for me. I need movement to think clearly.' },
+  { dim:'environment', num:22, text:'I prefer to work in a relaxed, informal environment rather than a very formal, structured space with rigid rules.', lo:'I work best in formal, structured environments.', hi:'I need informality. Overly formal physical environments make me less effective.' },
+  { dim:'environment', num:23, text:'My concentration and memory are at their best during early morning hours — before 9am is when I do my sharpest thinking.', lo:'I am not a morning person at all. Early morning is my worst thinking time.', hi:'Early morning is my peak. 6–9am is when I produce my best work.' },
+  { dim:'environment', num:24, text:'My thinking and concentration peak in the late morning — roughly between 10am and noon is when I do my best work.', lo:'Late morning is not particularly special for me.', hi:'10am to noon is my absolute peak. I protect this time for difficult work.' },
+  { dim:'environment', num:25, text:'I am most alert, focused and productive in the afternoon — after lunch is when I really come alive and do my best thinking.', lo:'Afternoon is a low point for me. I feel sluggish after lunch.', hi:'Afternoon is my best time. I am significantly more productive after lunch.' },
+  { dim:'environment', num:26, text:'I do my best work in the evening or at night — I come alive late in the day and prefer to tackle difficult tasks after normal working hours.', lo:'Evening work is the worst for me. I need to stop early to function well.', hi:'I am a night person. My best thinking happens after 6pm or even later.' },
+
+  // DIMENSION 4 — SOCIAL (Q27-33)
+  { dim:'social', num:27, text:'I do my best thinking and most productive work when I am completely alone, without interruptions or the presence of others.', lo:'I think better and am more productive when other people are around.', hi:'Alone is where I produce my best work. Others present reduce my focus significantly.' },
+  { dim:'social', num:28, text:'I am significantly more productive when I have one specific person to work alongside — a thinking partner to exchange ideas with.', lo:'Working in pairs does not particularly help me. I prefer working independently.', hi:'Working with one person brings out my best. A thinking partner is essential.' },
+  { dim:'social', num:29, text:'I perform best and feel most effective when working with a group of peers — people at a similar level who share similar challenges.', lo:'Peer groups do not particularly help my performance.', hi:'Working with peers energises me and improves both quality and speed of my work.' },
+  { dim:'social', num:30, text:'I enjoy working in teams and find that being part of a team significantly enhances the quality of my work and insight.', lo:'Teams frustrate me. I prefer smaller groups or solo work.', hi:'Teams bring out my best. Collaboration and collective working energise me greatly.' },
+  { dim:'social', num:31, text:'I prefer to work independently and figure things out myself — I do not like receiving instructions or being told exactly how to do something.', lo:'I prefer clear instructions and like working directly with the person in charge.', hi:'I work best without oversight. Instructions feel limiting. I find my own way.' },
+  { dim:'social', num:32, text:'I am comfortable challenging my manager or supervisor if I believe they are wrong, and I prefer to develop my own approaches to tasks.', lo:'I respect authority and follow directions without needing to question them.', hi:'I challenge authority when I think it is wrong. I do things my own way.' },
+  { dim:'social', num:33, text:'I feel uncomfortable when my work is closely supervised or reviewed — I prefer to work with high autonomy and minimal oversight.', lo:'I welcome close supervision and find it helpful rather than intrusive.', hi:'Close supervision genuinely stresses me. I need full autonomy to perform at my best.' },
+
+  // DIMENSION 5 — MOTIVATION (Q34-39)
+  { dim:'motivation', num:34, text:'Even without deadlines, targets or anyone checking on me, I push myself to do my best work — I hold myself to standards that often exceed what others expect.', lo:'I need external pressure and accountability to do my best. Without it I tend to do what is required and no more.', hi:'I always push myself beyond what is expected, regardless of whether anyone is watching or measuring.' },
+  { dim:'motivation', num:35, text:'When I am working on something that genuinely interests me, I lose track of time — I get absorbed and think about the work even outside of work hours simply because I want to.', lo:'I rarely think about work outside of work hours. When the day ends I switch off completely.', hi:'I regularly get absorbed in work I find interesting. Ideas come to me in the shower, on walks, at night — because I want to think about it.' },
+  { dim:'motivation', num:36, text:'The standards I set for my own work come from inside me — I would be disappointed in myself if I delivered something mediocre, even if nobody else would notice the difference.', lo:'My standards are set by what others expect. If it meets the requirement, that is enough for me.', hi:'I have my own internal bar that I hold myself to — completely independent of what anyone else expects.' },
+  { dim:'motivation', num:37, text:'Right now, when I think about my work, I feel a genuine inner pull — I actually want to do it, not just because I have to. I feel genuinely engaged and alive in what I am doing.', lo:'Right now I am going through the motions. There is no real inner pull. I do it because I have to.', hi:'Right now I feel genuinely energised and pulled toward my work. I want to be here doing this.' },
+  { dim:'motivation', num:38, text:'Lately, I find it harder than usual to get started on work tasks — even things I would normally enjoy feel heavier than before and require more effort to begin.', lo:'I find it just as easy to get started as I always have. No change in my energy or enthusiasm.', hi:'Getting started feels very heavy lately. Things that used to energise me now feel like real effort.' },
+  { dim:'motivation', num:39, text:'Overall, when I look at my work right now — the role, the team, the challenges — I feel that this is where I want to be and I am motivated to give my best.', lo:'Overall right now I feel disconnected from my work. It does not feel like where I want to be.', hi:'Overall right now I feel this is exactly where I want to be. I am motivated and committed.' },
+
+  // DIMENSION 6 — STRUCTURE (Q40-43)
+  { dim:'structure', num:40, text:'I find it easy to adapt when plans change suddenly or when I have to handle unexpected situations — I am comfortable with uncertainty.', lo:'Sudden changes genuinely stress me. I need stability and predictability to perform.', hi:'I adapt quickly and comfortably to any change or unexpected situation.' },
+  { dim:'structure', num:41, text:'I take my responsibilities extremely seriously — if I commit to something I follow through even when it is difficult or inconvenient.', lo:'I struggle to follow through on all commitments. I need external accountability.', hi:'My word is my bond. I always deliver on commitments regardless of difficulty.' },
+  { dim:'structure', num:42, text:'I prefer flexible working arrangements where I can organise my own time — fixed schedules and rigid processes reduce my effectiveness.', lo:'I work best with clear fixed routines and predictable schedules.', hi:'Flexibility is essential. Rigid schedules significantly reduce my performance.' },
+  { dim:'structure', num:43, text:'I need regular feedback and check-ins from my manager to feel confident that I am on the right track and doing what is expected.', lo:'I rarely need external feedback to feel confident. I assess my own performance.', hi:'Regular feedback is essential. Without it I feel uncertain and my confidence drops.' },
+];
+
+function startAssessment() {
+  const name = document.getElementById('user-name').value.trim();
+  if (!name) { document.getElementById('user-name').style.borderColor='rgba(240,82,82,0.5)'; return; }
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('assessment').style.display = 'block';
+  buildAssessment();
+  showQuestion(0);
+}
+
+function buildAssessment() {
+  const body = document.getElementById('assess-body');
+  let html = '';
+  let lastDim = '';
+
+  questions.forEach((q, i) => {
+    if (q.dim !== lastDim) {
+      const dim = dimensions.find(d => d.id === q.dim);
+      html += `<div class="dim-intro" id="dim-intro-${q.dim}">
+        <div class="dim-intro-label">${dim.label} of 6</div>
+        <div class="dim-intro-title">${dim.title}</div>
+        <div class="dim-intro-body">${dim.desc}</div>
+      </div>`;
+      lastDim = q.dim;
+    }
+    html += `<div class="question-card" id="q-card-${i}">
+      <div class="q-num">Question ${q.num} of 42</div>
+      <div class="q-text">${q.text}</div>
+      <div class="scale-wrap">
+        <div class="scale-labels"><span>Not like me at all</span><span>Completely like me</span></div>
+        <div class="scale-btns">
+          ${[1,2,3,4,5].map(n => `<button class="scale-btn" id="q${i}-${n}" onclick="selectAnswer(${i},${n})">${n}</button>`).join('')}
+        </div>
+        <div class="q-hint"><span>${q.lo}</span><span>${q.hi}</span></div>
+      </div>
+    </div>`;
+  });
+
+  html += `<div class="nav-btns">
+    <button class="btn-prev" id="btn-prev" onclick="prevQ()">← Back</button>
+    <button class="btn-next" id="btn-next" onclick="nextQ()" disabled>Continue →</button>
+  </div>`;
+  body.innerHTML = html;
+}
+
+function showQuestion(idx) {
+  // Hide all
+  document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.dim-intro').forEach(c => c.classList.remove('active'));
+
+  const q = questions[idx];
+  document.getElementById(`q-card-${idx}`).classList.add('active');
+
+  // Show dim intro if first question of dimension
+  const isFirstOfDim = idx === 0 || questions[idx-1].dim !== q.dim;
+  if (isFirstOfDim) {
+    document.getElementById(`dim-intro-${q.dim}`).classList.add('active');
+  }
+
+  // Update progress
+  const pct = Math.round((idx / questions.length) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `Question ${idx+1} of 42`;
+  const dim = dimensions.find(d => d.id === q.dim);
+  document.getElementById('dim-label').textContent = dim.title;
+
+  // Restore selection if exists
+  const prev = answers[idx];
+  if (prev) {
+    document.getElementById(`q${idx}-${prev}`).classList.add('selected');
+    document.getElementById('btn-next').disabled = false;
+  } else {
+    document.getElementById('btn-next').disabled = true;
+  }
+
+  // Prev button
+  document.getElementById('btn-prev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+
+  // Next button text
+  const btn = document.getElementById('btn-next');
+  if (idx === questions.length - 1) {
+    btn.textContent = 'See my results →';
+  } else {
+    btn.textContent = 'Continue →';
+  }
+
+  currentQ = idx;
+  window.scrollTo({top: 0, behavior:'smooth'});
+}
+
+function selectAnswer(qIdx, val) {
+  answers[qIdx] = val;
+  [1,2,3,4,5].forEach(n => {
+    const btn = document.getElementById(`q${qIdx}-${n}`);
+    if (btn) btn.classList.toggle('selected', n === val);
+  });
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextQ() {
+  if (currentQ < questions.length - 1) {
+    showQuestion(currentQ + 1);
+  } else {
+    showResults();
+  }
+}
+
+function prevQ() {
+  if (currentQ > 0) showQuestion(currentQ - 1);
+}
+
+// SCORING ENGINE
+function calcDimScore(dimId) {
+  const qs = questions.map((q,i) => ({...q, idx:i})).filter(q => q.dim === dimId);
+  const vals = qs.map(q => answers[q.idx] || 3);
+  return vals.reduce((a,b) => a+b, 0) / vals.length;
+}
+
+function calcChannelScores() {
+  const channels = [
+    {id:'aud_listen', label:'Auditory — Listening', qIdx:6},
+    {id:'aud_speak', label:'Auditory — Speaking', qIdx:7},
+    {id:'aud_internal', label:'Auditory — Inner dialogue', qIdx:8},
+    {id:'vis_external', label:'Visual — Diagrams & charts', qIdx:9},
+    {id:'vis_internal', label:'Visual — Imagination', qIdx:10},
+    {id:'reading', label:'Reading & Writing', qIdx:11},
+    {id:'kin_doing', label:'Kinesthetic — Doing', qIdx:12},
+    {id:'kin_hands', label:'Kinesthetic — Hands', qIdx:13},
+    {id:'intuition', label:'Intuition & Gut feeling', qIdx:14},
+  ];
+  return channels.map(c => ({...c, score: answers[c.qIdx] || 3}))
+    .sort((a,b) => b.score - a.score);
+}
+
+function getTimeOfDay() {
+  const times = [
+    {label:'Early morning (before 9am)', qIdx:21, score: answers[21]||3},
+    {label:'Late morning (10am–noon)', qIdx:22, score: answers[22]||3},
+    {label:'Afternoon', qIdx:23, score: answers[23]||3},
+    {label:'Evening / night', qIdx:24, score: answers[24]||3},
+  ];
+  return times.sort((a,b) => b.score - a.score)[0];
+}
+
+function getLabel(score, labels) {
+  if (score >= 4) return labels[2];
+  if (score >= 2.5) return labels[1];
+  return labels[0];
+}
+
+function showResults() {
+  document.getElementById('assessment').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  const name = userName();
+  const thinking = calcDimScore('thinking');
+  const sensory = calcDimScore('sensory');
+  const environment = calcDimScore('environment');
+  const social = calcDimScore('social');
+  const motivation = calcDimScore('motivation');
+  const structure = calcDimScore('structure');
+  const channels = calcChannelScores();
+  const topChannels = channels.slice(0,3);
+  const timeOfDay = getTimeOfDay();
+  const movementNeed = answers[19] || 3;
+  const autonomy = answers[29] || 3;
+  const currentMotivation = answers[37] || 3;
+  const variety = answers[35] || 3;
+
+  // Generate headline
+  const thinkingLabel = thinking >= 4 ? 'big-picture visionary' : thinking < 2.5 ? 'precision-focused analyst' : 'balanced thinker';
+  const topChannel = topChannels[0].label.toLowerCase().split('—')[0].trim();
+  const motLabel = motivation >= 4 ? 'self-driven' : 'externally energised';
+  const headline = `${thinkingLabel.charAt(0).toUpperCase() + thinkingLabel.slice(1)}, ${topChannel} and ${motLabel}`;
+
+  const desc = `Your profile shows someone who performs at their best when given ${autonomy >= 4 ? 'full autonomy and ownership' : 'clear structure and defined goals'}. Your strongest sensory channels are ${topChannels.slice(0,2).map(c=>c.label.split('—')[1]?.trim()||c.label).join(' and ')}. Your peak performance time is ${timeOfDay.label.toLowerCase()}.${movementNeed >= 4 ? ' You need movement to concentrate — sitting still for long periods genuinely reduces your performance.' : ''}${currentMotivation < 3 ? ' Your current motivation is below your natural level — something in your environment may need to change.' : ''}`;
+
+  // Conflicts
+  const conflicts = [];
+  if (thinking >= 4 && (answers[4]||3) <= 2) conflicts.push({title:'Big-picture thinker in detail-heavy situation', body:'Your biological strength is seeing the whole picture — but your current situation may be pulling you into detail work. This costs you energy. Explore whether detail tasks can be delegated or simplified.'});
+  if (movementNeed >= 4) conflicts.push({title:'High movement need', body:'You need physical movement to concentrate effectively. Long seated meetings and desk-bound days are a genuine performance cost for you. Walking meetings and movement breaks every 90 minutes would help significantly.'});
+  if (currentMotivation < 3) conflicts.push({title:'⚠️ Current motivation is low', body:'Your score on current motivation is below 3. This is an important signal. Something in your current role or environment may be misaligned with your natural strengths. This is worth exploring with your manager or mentor.'});
+  if (autonomy >= 4 && (answers[41]||3) <= 2) conflicts.push({title:'High autonomy need', body:'You need to own your work and find your own way. Micromanagement or rigid processes will significantly reduce your performance and motivation.'});
+  if (variety >= 4) conflicts.push({title:'High variety need', body:'Routine and repetition genuinely drain your motivation. You perform at your best when there are new challenges and fresh problems to solve. If your role has become too routine, it may be time to discuss expansion with your manager.'});
+
+  // Tips
+  const tips = [
+    `Communicate your work through ${topChannels[0].label.split('—')[1]?.trim()||topChannels[0].label} whenever possible — this is your strongest channel.`,
+    `Protect your ${timeOfDay.label.toLowerCase()} hours for your most important and demanding work.`,
+    thinking >= 4 ? 'Always insist on understanding the why and the big picture before diving into details.' : 'Use your detail strength for tasks that require precision and systematic execution.',
+    movementNeed >= 4 ? 'Try walking meetings, standing desks and regular movement breaks — your brain literally works better when your body is moving.' : 'Your ability to sit and concentrate for long periods is a genuine strength — protect your deep work time.',
+    autonomy >= 4 ? 'Ask your manager for ownership of outcomes rather than being managed on process — you perform significantly better with full responsibility.' : 'Clear structure and regular check-ins help you perform at your best — do not hesitate to ask for them.',
+    currentMotivation >= 4 ? 'You are in a good motivation state right now — identify what is working and protect it.' : 'Reflect on what originally excited you about your role and whether you can reconnect with that purpose.',
+  ];
+
+  const dimColors = {thinking:'#5AABFF', sensory:'#4ECB81', environment:'#F5A623', social:'#A78BFA', motivation:'#F87171', structure:'#2DD4BF'};
+
+  let html = `
+    <div class="results-header">
+      <div class="results-name"><span>${name}</span>'s performance profile</div>
+      <div class="results-sub">Based on your answers — your unique biological and learned performance profile</div>
+    </div>
+
+    <div class="headline-box">
+      <div class="headline-label">Your headline</div>
+      <div class="headline-text">${headline}</div>
+      <div class="headline-desc">${desc}</div>
+    </div>
+
+    <div class="results-grid">
+      <div class="result-card">
+        <div class="rc-label">Thinking style</div>
+        <div class="rc-title">${getLabel(thinking, ['Sequential & detail-focused','Flexible thinker','Big-picture & simultaneous'])}</div>
+        <div class="rc-bar-wrap"><div class="rc-bar"><div class="rc-fill" style="width:${(thinking/5)*100}%;background:${dimColors.thinking}"></div></div><div class="rc-score"><span>Sequential</span><span>${thinking.toFixed(1)}/5</span><span>Big-picture</span></div></div>
+        <div class="rc-insight">${thinking >= 4 ? 'You see patterns and connections before details. You need the why before the how. Vision and strategy are your natural territory.' : thinking < 2.5 ? 'You process step-by-step with precision and reliability. Detail, accuracy and systematic thinking are your biological strengths.' : 'You can work both ways depending on context — a genuine advantage in diverse teams.'}</div>
+      </div>
+
+      <div class="result-card" style="grid-column:1/-1;">
+        <div class="rc-label">Sensory channels — all 10</div>
+        <div class="rc-title">How you best receive and retain information</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin:0.75rem 0;">
+          ${channels.map(c => {
+            const state = c.score >= 4 ? {label:'Strength', bg:'rgba(0,212,170,0.12)', color:'var(--teal)', border:'var(--teal-border)'} :
+                         c.score <= 2 ? {label:'Avoid when demanding', bg:'rgba(240,82,82,0.1)', color:'#F87171', border:'rgba(240,82,82,0.25)'} :
+                         {label:'Flexible', bg:'rgba(245,158,11,0.1)', color:'var(--amber)', border:'rgba(245,158,11,0.25)'};
+            return `<div style="background:${state.bg};border:1px solid ${state.border};border-radius:8px;padding:0.5rem 0.65rem;">
+              <div style="font-size:0.68rem;font-weight:600;color:${state.color};margin-bottom:0.2rem;">${state.label}</div>
+              <div style="font-size:0.75rem;color:var(--white);">${c.label}</div>
+              <div style="font-size:0.65rem;color:var(--white-dim);margin-top:0.15rem;">${c.score.toFixed(0)}/5</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div style="font-size:0.75rem;color:var(--white-dim);line-height:1.5;margin-top:0.5rem;">
+          <strong style="color:var(--white);">Strengths</strong> = use these always. 
+          <strong style="color:var(--amber);">Flexible</strong> = works when motivated. 
+          <strong style="color:#F87171;">Avoid when demanding</strong> = reduce this channel in difficult tasks — it costs energy.
+        </div>
+      </div>
+
+      <div class="result-card" style="grid-column:1/-1;background:linear-gradient(135deg,var(--navy-mid),var(--navy-light));border-color:${thinking >= 3.5 ? 'rgba(0,212,170,0.2)' : 'rgba(59,130,246,0.2)'};">
+        <div class="rc-label">Communication guide — how to work with you</div>
+        <div class="rc-title">${thinking >= 3.5 ? '🧠 Right-brain dominant — big-picture processor' : thinking < 2.5 ? '🧠 Left-brain dominant — sequential processor' : '🧠 Flexible thinker — both styles'}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.75rem;">
+          <div>
+            <div style="font-size:0.7rem;font-weight:600;color:var(--teal);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">✅ What works with you</div>
+            ${thinking >= 3.5 ? `
+              <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.7;">
+                • Start with the big picture and purpose — always<br>
+                • Open questions: "What if...", "How would you..."<br>
+                • Connect tasks to the overall mission<br>
+                • Allow free-form responses — not just lists<br>
+                • Give the concept overview first, details later<br>
+                • Humour and concrete examples help you engage
+              </div>` : thinking < 2.5 ? `
+              <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.7;">
+                • Give clear steps, details and structure<br>
+                • Written instructions for everything<br>
+                • Facts presented in logical sequence<br>
+                • Specific questions with clear answers<br>
+                • Written confirmation of decisions<br>
+                • Time to ask questions after receiving information
+              </div>` : `
+              <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.7;">
+                • You adapt to both styles — a real strength<br>
+                • Big picture first, then structured details<br>
+                • Mix of open questions and specific asks<br>
+                • Written summary after verbal discussion<br>
+                • You can bridge between different thinkers
+              </div>`}
+          </div>
+          <div>
+            <div style="font-size:0.7rem;font-weight:600;color:#F87171;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.5rem;">❌ What drains you</div>
+            ${thinking >= 3.5 ? `
+              <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.7;">
+                • Being buried in details before seeing the purpose<br>
+                • Long fact-heavy documents without context<br>
+                • Rigid processes with no room for creativity<br>
+                • Being asked to report before seeing the outcome<br>
+                • Micromanagement of how, not what
+              </div>` : thinking < 2.5 ? `
+              <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.7;">
+                • Vague instructions without clear steps<br>
+                • Being expected to figure out the process yourself<br>
+                • Sudden changes without explanation<br>
+                • Open-ended questions without structure<br>
+                • Too much information at once without order
+              </div>` : `
+              <div style="font-size:0.78rem;color:var(--white-dim);line-height:1.7;">
+                • Extreme rigidity with no creative space<br>
+                • Complete chaos with no structure at all<br>
+                • You need a balance — neither extreme works
+              </div>`}
+          </div>
+        </div>
+      </div>
+
+      <div class="result-card">
+        <div class="rc-label">Physical & environment</div>
+        <div class="rc-title">Peak time: ${timeOfDay.label}</div>
+        <div class="rc-bar-wrap"><div class="rc-bar"><div class="rc-fill" style="width:${(movementNeed/5)*100}%;background:${dimColors.environment}"></div></div><div class="rc-score"><span>Sits still</span><span>${movementNeed.toFixed(1)}/5</span><span>Needs movement</span></div></div>
+        <div class="rc-insight">${movementNeed >= 4 ? 'Movement is essential for your concentration. Your brain works better when your body is active.' : 'You can concentrate effectively while sitting — long deep work sessions suit you well.'}</div>
+      </div>
+
+      <div class="result-card">
+        <div class="rc-label">Social style</div>
+        <div class="rc-title">${getLabel(social, ['Independent worker','Flexible collaborator','Team & pair oriented'])}</div>
+        <div class="rc-bar-wrap"><div class="rc-bar"><div class="rc-fill" style="width:${(social/5)*100}%;background:${dimColors.social}"></div></div><div class="rc-score"><span>Solo</span><span>${social.toFixed(1)}/5</span><span>Team</span></div></div>
+        <div class="rc-insight">${autonomy >= 4 ? 'You need full autonomy. Being managed on process rather than outcome significantly reduces your performance and motivation.' : 'You are comfortable with direction and structure. Clear expectations help you perform at your best.'}</div>
+      </div>
+
+      <div class="result-card" style="${currentMotivation < 3 || (answers[36]||3) >= 4 ? 'border-color:rgba(240,82,82,0.3);' : ''}">
+        <div class="rc-label">Inner motivation ${currentMotivation < 3 || (answers[36]||3) >= 4 ? '⚠️' : ''}</div>
+        <div class="rc-title">${motivation >= 4 ? 'Strong self-driven inner motivation' : motivation >= 3 ? 'Moderate inner motivation' : 'Inner motivation currently low'}</div>
+        <div class="rc-bar-wrap"><div class="rc-bar"><div class="rc-fill" style="width:${(motivation/5)*100}%;background:${currentMotivation < 3 ? dimColors.motivation : '#10B981'}"></div></div><div class="rc-score"><span>Needs external drive</span><span>${motivation.toFixed(1)}/5</span><span>Fully self-driven</span></div></div>
+        <div class="rc-insight">${motivation >= 4 ? 'Your inner drive is strong and self-generated. You hold yourself to your own high standards regardless of external pressure or recognition.' : motivation >= 3 ? 'Your inner drive is moderate — you benefit from both internal purpose and some external structure or recognition to stay at your best.' : 'Your inner motivation appears low right now. This reflects your current state — something in your situation may need attention.'}</div>
+        ${(answers[36]||3) >= 4 ? '<div style="margin-top:0.5rem;font-size:0.75rem;color:rgba(240,82,82,0.85);">⚠️ Signs of motivational fatigue detected. Things that used to energise you now feel heavier than before — this is worth paying attention to.</div>' : ''}
+        ${currentMotivation < 3 ? '<div style="margin-top:0.5rem;font-size:0.75rem;color:rgba(240,82,82,0.85);">⚠️ Current engagement is low. Your inner pull toward your work is not strong right now — this is an important signal.</div>' : ''}
+      </div>
+
+      <div class="result-card">
+        <div class="rc-label">Structure & adaptability</div>
+        <div class="rc-title">${getLabel(structure, ['Needs clear structure','Flexible either way','Highly adaptable'])}</div>
+        <div class="rc-bar-wrap"><div class="rc-bar"><div class="rc-fill" style="width:${(structure/5)*100}%;background:${dimColors.structure}"></div></div><div class="rc-score"><span>Needs structure</span><span>${structure.toFixed(1)}/5</span><span>Highly adaptable</span></div></div>
+        <div class="rc-insight">${structure >= 4 ? 'You adapt quickly to change and uncertainty. You perform well in fast-moving, unpredictable environments.' : 'Stability and predictability help you perform at your best. Advance notice of changes is important for you.'}</div>
+      </div>
+    </div>`;
+
+  if (conflicts.length > 0) {
+    html += `<div class="conflict-section">
+      <h3 style="font-family:var(--font-d);font-size:1rem;font-weight:700;color:var(--white);margin-bottom:1rem;">⚠️ Potential friction points</h3>
+      ${conflicts.map(c => `<div class="conflict-box"><div class="conflict-title">⚡ ${c.title}</div><div class="conflict-body">${c.body}</div></div>`).join('')}
+    </div>`;
+  }
+
+  html += `<div class="tips-section">
+    <div class="tips-title">🎯 Practical tips based on your profile</div>
+    <div class="tips-list">${tips.map(t => `<div class="tip-item">${t}</div>`).join('')}</div>
+  </div>
+
+  <div class="share-section">
+    <div class="share-title">Your profile is ready, ${name}! 🎉</div>
+    <div class="share-sub">Share this with your manager so they can understand how to bring out your best — and see what CX3 looks like for a full team.</div>
+    <button class="btn-share" onclick="window.print()">Download my profile →</button>
+  </div>`;
+
+  document.getElementById('results-content').innerHTML = html;
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.rc-fill').forEach(b => {
+      const w = b.style.width;
+      b.style.width = '0%';
+      setTimeout(() => b.style.width = w, 100);
+    });
+  }, 300);
+}
+</script>
+</body>
+</html>
